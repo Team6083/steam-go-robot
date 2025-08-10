@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends TimedRobot {
 
+
   XboxController xboxController = new XboxController(0);
 
   WPI_VictorSPX rightMotor1 = new WPI_VictorSPX(31);
@@ -60,7 +61,13 @@ public class Robot extends TimedRobot {
     rightMotor2.follow(rightMotor1);
     leftMotor2.follow(leftMotor1);
 
-    intakeMotor.set(xboxController.getRightTriggerAxis()-xboxController.getLeftTriggerAxis());
+    if(xboxController.getRightTriggerAxis() > 0.1){
+      intakeMotor.set(xboxController.getRightTriggerAxis() * 0.4);
+    } else if(xboxController.getLeftTriggerAxis() > 0.1){
+      intakeMotor.set(-xboxController.getLeftTriggerAxis() * 0.4);
+    } else{
+      intakeMotor.set(0.0);
+    }
   }
 
   @Override
