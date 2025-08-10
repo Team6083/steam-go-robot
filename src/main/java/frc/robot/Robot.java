@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The methods in this class are called automatically corresponding to each
@@ -36,6 +37,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    SmartDashboard.putNumber("intakeMotorSpeed", intakeMotor.get());
+    SmartDashboard.putNumber("rightTrigger", xboxController.getRightTriggerAxis());
   }
 
   @Override
@@ -57,8 +60,7 @@ public class Robot extends TimedRobot {
     rightMotor2.follow(rightMotor1);
     leftMotor2.follow(leftMotor1);
 
-    intakeMotor.set(xboxController.getRightTriggerAxis());
-    intakeMotor.set(-xboxController.getLeftTriggerAxis());
+    intakeMotor.set(xboxController.getRightTriggerAxis()-xboxController.getLeftTriggerAxis());
   }
 
   @Override
