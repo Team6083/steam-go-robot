@@ -25,7 +25,7 @@ public class Robot extends TimedRobot {
   WPI_VictorSPX leftMotor1 = new WPI_VictorSPX(34);
   WPI_VictorSPX leftMotor2 = new WPI_VictorSPX(33);
 
-  WPI_VictorSPX intakeMotor = new WPI_VictorSPX(10); // TODO: Change to intake motor ID
+  WPI_VictorSPX intakeMotor = new WPI_VictorSPX(21);
 
   // WPI_VictorSPX climberMotor = new WPI_VictorSPX(11); 
 
