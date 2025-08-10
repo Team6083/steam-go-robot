@@ -4,98 +4,84 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * The methods in this class are called automatically corresponding to each mode, as described in
- * the TimedRobot documentation. If you change the name of this class or the package after creating
+ * The methods in this class are called automatically corresponding to each
+ * mode, as described in
+ * the TimedRobot documentation. If you change the name of this class or the
+ * package after creating
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends TimedRobot {
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
-  private VictorSPX rightFront;
-  private VictorSPX rightBack;
-  private VictorSPX leftFront;
-  private VictorSPX leftBack;
-  private VictorSPX coralIntakeMotor;
-  private XboxController xboxController;
+
+  XboxController xboxController = new XboxController(0);
+
+  WPI_VictorSPX rightMotor1 = new WPI_VictorSPX(31);
+  WPI_VictorSPX rightMotor2 = new WPI_VictorSPX(32);
+  WPI_VictorSPX leftMotor1 = new WPI_VictorSPX(34);
+  WPI_VictorSPX leftMotor2 = new WPI_VictorSPX(33);
+
+  WPI_VictorSPX intakeMotor = new WPI_VictorSPX(10); // TODO: Change to intake motor ID
+
+  // WPI_VictorSPX climberMotor = new WPI_VictorSPX(11); 
 
   public Robot() {
-    // Constructor for the Robot class
-  }
-
-  @Override
-  public void robotInit() {
-    xboxController = new XboxController(0);
-    rightFront = new VictorSPX(1);
-    rightBack = new VictorSPX(2);
-    leftFront = new VictorSPX(3);
-    leftBack = new VictorSPX(4);
-    coralIntakeMotor = new VictorSPX(5);
-    rightBack.follow(rightFront);
-    leftBack.follow(leftFront);
-    rightBack.setInverted(true);
-    leftBack.setInverted(false);
-    rightFront.setInverted(true);
-    leftFront.setInverted(false);
+    leftMotor1.setInverted(true);
+    leftMotor2.setInverted(true);
   }
 
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("Right wheel speed", xboxController.getRightY());
-    SmartDashboard.putNumber("Left wheel speed", xboxController.getLeftY());
-    SmartDashboard.putNumber("Right Front Speed", rightFront.getMotorOutputPercent());
-    SmartDashboard.putNumber("Right Back Speed", rightBack.getMotorOutputPercent());
-    SmartDashboard.putNumber("Left Front Speed", leftFront.getMotorOutputPercent());
-    SmartDashboard.putNumber("Left Back Speed", leftBack.getMotorOutputPercent());
-    SmartDashboard.putBoolean("Right Bumper", xboxController.getRightBumperButton());
-    SmartDashboard.putNumber("CoralIntake Speed", coralIntakeMotor.getMotorOutputPercent());
   }
 
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+  }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   @Override
   public void teleopInit() {
-    
   }
 
   @Override
   public void teleopPeriodic() {
-    rightFront.set(ControlMode.PercentOutput,speedLimit(xboxController.getRightY()));
-    leftFront.set(ControlMode.PercentOutput,speedLimit(xboxController.getLeftY()));
-    if(xboxController.getRightBumperButton()){
-      coralIntakeMotor.set(ControlMode.PercentOutput, 0.5);
-    }else{
-      coralIntakeMotor.set(ControlMode.PercentOutput, 0.0);
-    }
+    rightMotor1.set(xboxController.getRightY());
+    leftMotor1.set(xboxController.getLeftY());
+    rightMotor2.follow(rightMotor1);
+    leftMotor2.follow(leftMotor1);
+
+    intakeMotor.set(xboxController.getRightTriggerAxis());
+    intakeMotor.set(-xboxController.getLeftTriggerAxis());
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
-  public static double speedLimit(double speed){
-    if (speed > 1.0) {
-      speed = 1.0;
-    } else if (speed < -1.0) {
-      speed = -1.0;
-    }
-    return speed;
-  }  
+  @Override
+  public void testInit() {
+  }
+
+  @Override
+  public void testPeriodic() {
+  }
+
+  @Override
+  public void simulationInit() {
+  }
+
+  @Override
+  public void simulationPeriodic() {
+  }
 }
-
-
