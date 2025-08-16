@@ -8,7 +8,7 @@ on:
 
 permissions:
   contents: write
-  security-events: write   # 🔑 讓 dependency submission 可以寫入
+  security-events: write   # Allow dependency submission to write security events
 
 jobs:
   build:
