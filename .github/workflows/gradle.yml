@@ -2,7 +2,7 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "main" ]   # change to your default branch if different
+    branches: [ "main" ]   # change to your default branch
   pull_request:
     branches: [ "main" ]
 
@@ -37,6 +37,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
 
-      # No JSON needed, action runs Gradle and submits dependencies
+      # ✅ This step scans Gradle dependencies and uploads directly
       - name: Submit dependency graph
         uses: gradle/actions/dependency-submission@v3
