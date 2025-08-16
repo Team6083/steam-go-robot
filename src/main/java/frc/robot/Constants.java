@@ -15,11 +15,13 @@ public class Constants {
 
     public class intakeConstants {
         public static final int intakeMotorID = 21;
+        public static final Boolean intakeMotorInverted = false;
         public static final double intakeMaxSpeed = 0.4;
     }
 
     public class ClimberConstants {
         public static final int climberMotorID = 0; // TODO: Change ID
+        public static final Boolean climberMotorInverted = false;
         public static final int climberEncoderChannel = 0; // TODO: check
 
         public static final double climberEncoderFullRange = 360.0; // TODO: check

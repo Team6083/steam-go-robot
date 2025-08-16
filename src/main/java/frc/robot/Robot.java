@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.intakeConstants;
 
 /**
@@ -33,7 +33,15 @@ public class Robot extends TimedRobot {
 
   WPI_VictorSPX intakeMotor = new WPI_VictorSPX(intakeConstants.intakeMotorID);
 
-
+  WPI_VictorSPX climberMotor = new WPI_VictorSPX(ClimberConstants.climberMotorID);
+  PIDController climberPID = new PIDController(
+      ClimberConstants.climberPIDKp,
+      ClimberConstants.climberPIDKi,
+      ClimberConstants.climberPIDKd);
+  DutyCycleEncoder climberEncoder = new DutyCycleEncoder(
+      ClimberConstants.climberEncoderChannel,
+      ClimberConstants.climberEncoderFullRange,
+      ClimberConstants.climberEncoderExpectedZero);
 
   public Robot() {
     rightFront.setInverted(DriveConstants.rightFrontInverted);
@@ -41,13 +49,23 @@ public class Robot extends TimedRobot {
     leftFront.setInverted(DriveConstants.leftFrontInverted);
     leftBack.setInverted(DriveConstants.leftBackInverted);
 
-    intakeMotor.setInverted(false);
-  
+    intakeMotor.setInverted(intakeConstants.intakeMotorInverted);
+
+    climberMotor.setInverted(ClimberConstants.climberMotorInverted);
+
+    SmartDashboard.putData(climberPID);
+    SmartDashboard.putNumber("tankRightSpeed", rightFront.get());
+    SmartDashboard.putNumber("tankLeftSpeed", leftFront.get());
+    SmartDashboard.putNumber("intakeMotorSpeed", intakeMotor.get());
+    SmartDashboard.putNumber("climberEncoder", climberEncoder.get());
   }
 
   @Override
   public void robotPeriodic() {
+    SmartDashboard.putNumber("tankRightSpeed", rightFront.get());
+    SmartDashboard.putNumber("tankLeftSpeed", leftFront.get());
     SmartDashboard.putNumber("intakeMotorSpeed", intakeMotor.get());
+    SmartDashboard.putNumber("climberEncoder", climberEncoder.get());
   }
 
   @Override
@@ -64,21 +82,37 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    tankControl();
+
+    intakeControl();
+
+    climberControl();
+  }
+
+  private void tankControl() {
     rightFront.set(xboxController.getRightY());
     leftFront.set(xboxController.getLeftY());
     rightBack.follow(rightFront);
     leftBack.follow(leftFront);
+  }
 
-    // if (xboxController.getRightTriggerAxis() > 0.1) {
-    //   intakeMotor.set(xboxController.getRightTriggerAxis() * intakeConstants.intakeMaxSpeed);
-    // } else if (xboxController.getLeftTriggerAxis() > 0.1) {
-    //   intakeMotor.set(-xboxController.getLeftTriggerAxis() * intakeConstants.intakeMaxSpeed);
-    // } else {
-    //   intakeMotor.set(0.0);
-    // }
+  private void intakeControl() {
+    if (xboxController.getLeftTriggerAxis() > 0.1) {
+      intakeMotor.set(xboxController.getRightTriggerAxis() * intakeConstants.intakeMaxSpeed);
+    } else {
+      intakeMotor.set(0.0);
+    }
+  }
 
-    
-
+  private void climberControl() {
+    if(xboxController.getRightTriggerAxis() > 0.1) {
+      climberMotor.set(xboxController.getRightTriggerAxis());
+    } else if (xboxController.getAButton()) {
+      double targetPosition = 180; 
+      double currentPosition = climberEncoder.get();
+      double output = climberPID.calculate(currentPosition, targetPosition);
+      climberMotor.set(output);
+    }
   }
 
   @Override
