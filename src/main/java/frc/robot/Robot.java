@@ -33,17 +33,7 @@ public class Robot extends TimedRobot {
 
   WPI_VictorSPX intakeMotor = new WPI_VictorSPX(intakeConstants.intakeMotorID);
 
-  WPI_VictorSPX climberMotor = new WPI_VictorSPX(ClimberConstants.climberMotorID);
 
-  PIDController climberPID = new PIDController(
-      ClimberConstants.climberPIDKp,
-      ClimberConstants.climberPIDKi,
-      ClimberConstants.climberPIDKd);
-
-  DutyCycleEncoder climberEncoder = new DutyCycleEncoder(
-      ClimberConstants.climberEncoderChannel,
-      ClimberConstants.climberEncoderFullRange,
-      ClimberConstants.climberEncoderExpectedZero); // TODO: Change value
 
   public Robot() {
     rightFront.setInverted(DriveConstants.rightFrontInverted);
@@ -52,16 +42,12 @@ public class Robot extends TimedRobot {
     leftBack.setInverted(DriveConstants.leftBackInverted);
 
     intakeMotor.setInverted(false);
-    climberEncoder.setInverted(false);
-
-    SmartDashboard.putData(climberPID);
+  
   }
 
   @Override
   public void robotPeriodic() {
     SmartDashboard.putNumber("intakeMotorSpeed", intakeMotor.get());
-
-    SmartDashboard.putNumber("climberEncoder", climberEncoder.get());
   }
 
   @Override
@@ -91,17 +77,7 @@ public class Robot extends TimedRobot {
     //   intakeMotor.set(0.0);
     // }
 
-    if (xboxController.getRightTriggerAxis() > 0.1) {
-      climberMotor.set(xboxController.getRightTriggerAxis() * 1);
-    } else if (xboxController.getLeftTriggerAxis() > 0.1) {
-      climberMotor.set(-xboxController.getLeftTriggerAxis() * 1);
-    } else {
-      climberMotor.set(0.0);
-    }
-
-    if (xboxController.getAButton()) { // TODO: Change setpoint to desired angle
-      climberMotor.set(climberPID.calculate(climberEncoder.get(), 90));
-    }
+    
 
   }
 
