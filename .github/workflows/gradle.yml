@@ -8,7 +8,7 @@ on:
 
 permissions:
   contents: write
-  security-events: write   # 🔑 required for dependency submission
+  security-events: write   # required for dependency submission
 
 jobs:
   build:
@@ -37,6 +37,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
 
-      # Submit Gradle dependency graph directly to GitHub
+      # No JSON needed, action runs Gradle and submits dependencies
       - name: Submit dependency graph
         uses: gradle/actions/dependency-submission@v3
