@@ -2,13 +2,21 @@ name: Java CI with Gradle
 
 on:
   push:
+<<<<<<< HEAD
     branches: [ "main" ]   # Change to your default branch, e.g., master
+=======
+    branches: [ "main" ]   # change to your default branch if different
+>>>>>>> 64c8319 (refactor: update Gradle CI workflow comments and improve dependency submission step)
   pull_request:
     branches: [ "main" ]
 
 permissions:
   contents: write
+<<<<<<< HEAD
   security-events: write   # Allow dependency submission to write security events
+=======
+  security-events: write   # 🔑 required for dependency submission
+>>>>>>> 64c8319 (refactor: update Gradle CI workflow comments and improve dependency submission step)
 
 jobs:
   build:
@@ -37,8 +45,14 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
 
+<<<<<<< HEAD
       # 這步會產生依賴關係快照 JSON
       - name: Generate dependency graph
         run: ./gradlew dependencies --configuration runtimeClasspath
 
       # Submit dependency data to GitHub
+=======
+      # Submit Gradle dependency graph directly to GitHub
+      - name: Submit dependency graph
+        uses: gradle/actions/dependency-submission@v3
+>>>>>>> 64c8319 (refactor: update Gradle CI workflow comments and improve dependency submission step)
