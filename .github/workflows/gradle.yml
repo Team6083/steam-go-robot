@@ -2,7 +2,7 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "main" ]   # default branch 請改成你的，例如 master
+    branches: [ "main" ]   # Change to your default branch, e.g., master
   pull_request:
     branches: [ "main" ]
 
