@@ -41,4 +41,4 @@ jobs:
       - name: Generate dependency graph
         run: ./gradlew dependencies --configuration runtimeClasspath
 
-      # 提交依賴資料給 GitH
+      # Submit dependency data to GitHub
