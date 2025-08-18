@@ -58,6 +58,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("tankLeftSpeed", leftFront.get());
     SmartDashboard.putNumber("intakeMotorSpeed", intakeMotor.get());
     SmartDashboard.putNumber("climberEncoder", climberEncoder.get());
+    SmartDashboard.putNumber("climberMotorSpeed", climberMotor.get());
   }
 
   @Override
@@ -66,6 +67,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("tankLeftSpeed", leftFront.get());
     SmartDashboard.putNumber("intakeMotorSpeed", intakeMotor.get());
     SmartDashboard.putNumber("climberEncoder", climberEncoder.get());
+    SmartDashboard.putNumber("climberMotorSpeed", climberMotor.get());
   }
 
   @Override
@@ -84,16 +86,19 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     tankControl();
 
-    intakeControl();
+    // intakeControl();
 
     climberControl();
   }
 
   private void tankControl() {
-    rightFront.set(xboxController.getRightY());
-    leftFront.set(xboxController.getLeftY());
-    rightBack.follow(rightFront);
-    leftBack.follow(leftFront);
+    if(!xboxController.getAButton()) {
+      rightFront.set(xboxController.getRightY());
+      leftFront.set(xboxController.getLeftY());
+      rightBack.follow(rightFront);
+      leftBack.follow(leftFront);
+    }
+    
   }
 
   private void intakeControl() {
@@ -102,18 +107,40 @@ public class Robot extends TimedRobot {
     } else {
       intakeMotor.set(0.0);
     }
+    if (xboxController.getLeftBumperButton()) {
+      intakeMotor.set(-intakeConstants.intakeMaxSpeed);
+    }
   }
 
   private void climberControl() {
-    if(xboxController.getRightTriggerAxis() > 0.1) {
-      climberMotor.set(xboxController.getRightTriggerAxis());
-    } else if (xboxController.getAButton()) {
-      double targetPosition = 180; 
-      double currentPosition = climberEncoder.get();
-      double output = climberPID.calculate(currentPosition, targetPosition);
-      climberMotor.set(output);
+    if (xboxController.getRightTriggerAxis() > 0.1) {
+      climberMotor.set(-xboxController.getRightTriggerAxis());
+    } else if (xboxController.getLeftTriggerAxis() > 0.1) {
+      climberMotor.set(xboxController.getLeftTriggerAxis());
+    } else {
+      // double currentPosition = climberEncoder.get();
+      climberMotor.set(0);
+    // if(xboxController.getAButtonPressed()){
+    //   double targetPosition = 7.7;
+    // }
+    // if(xboxController.getAButtonReleased()) {
+    //   double targetPosition = 97;
+    // }
+    if(xboxController.getAButton()){
+      rightFront.set(0.5);
+      leftFront.set(0.5);
+      rightBack.follow(rightFront);
+      leftBack.follow(leftFront);
+      climberPID.setSetpoint(100);
+    }else{
+      climberPID.setSetpoint(7.7);
     }
+      climberMotor.set(kDefaultPeriod);
   }
+  }
+
+  
+  
 
   @Override
   public void disabledInit() {

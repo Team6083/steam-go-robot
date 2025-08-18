@@ -20,9 +20,9 @@ public class Constants {
     }
 
     public class ClimberConstants {
-        public static final int climberMotorID = 0; // TODO: Change ID
-        public static final Boolean climberMotorInverted = false;
-        public static final int climberEncoderChannel = 0; // TODO: check
+        public static final int climberMotorID = 22; 
+        public static final Boolean climberMotorInverted = true;
+        public static final int climberEncoderChannel = 9;
 
         public static final double climberEncoderFullRange = 360.0; // TODO: check
         public static final double climberEncoderExpectedZero = 0.0; // TODO: check
