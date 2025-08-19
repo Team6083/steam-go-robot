@@ -149,7 +149,7 @@ public class Robot extends TimedRobot {
         break;
       case PULL_BACK:
         if (xboxController.getAButtonPressed()
-            || limitswitch.get() == true) {
+            || limitswitch.get()) {
           climberState = ClimberState.HOLD_POSITION_INIT;
         }
         break;
