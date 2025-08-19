@@ -160,8 +160,12 @@ public class Robot extends TimedRobot {
         }
         break;
       case EXTEND:
-        if (xboxController.getBButtonPressed()
-            || climberEncoder.get() >= ClimberConstants.climberExtendPosition) {
+        if (climberIsPID) {
+          if (xboxController.getBButtonPressed()
+              || climberEncoder.get() >= ClimberConstants.climberExtendPosition) {
+            climberState = ClimberState.HOLD_POSITION_INIT;
+          }
+        } else {
           climberState = ClimberState.HOLD_POSITION_INIT;
         }
         break;
@@ -204,8 +208,6 @@ public class Robot extends TimedRobot {
           } else {
             climberMotor.set(0.0);
           }
-        } else {
-          climberState = ClimberState.HOLD_POSITION_INIT;
         }
         break;
     }
