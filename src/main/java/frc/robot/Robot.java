@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import javax.xml.xpath.XPathNodes;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -116,21 +118,83 @@ public class Robot extends TimedRobot {
     }
   }
 
+  public enum ClimberState {
+    HOLD_POSITION_INIT,
+    HOLD_POSITION,
+    PULL_BACK,
+    CONTINUOUS_UP_DOWN,
+    EXTEND,
+  }
+
+  ClimberState climberState = ClimberState.HOLD_POSITION;
+
+  private void switchClimberState() {
+    switch (climberState) {
+      case HOLD_POSITION_INIT:
+        climberState = ClimberState.HOLD_POSITION;
+        break;
+      case HOLD_POSITION:
+        if (xboxController.getAButton()) {
+          climberState = ClimberState.PULL_BACK;
+        } else if (xboxController.getRightBumperButton()
+            || xboxController.getRightTriggerAxis() > 0.1) {
+          climberState = ClimberState.CONTINUOUS_UP_DOWN;
+        } else if (xboxController.getBButton()) {
+          climberState = ClimberState.EXTEND;
+        }
+        break;
+      case PULL_BACK:
+        if (xboxController.getAButtonPressed()
+            || limitswitch.get() == true) {
+          climberState = ClimberState.HOLD_POSITION_INIT;
+        }
+        break;
+      case CONTINUOUS_UP_DOWN:
+        if (!xboxController.getRightBumperButton() &&
+            !(xboxController.getRightTriggerAxis() < 0.1)) {
+          climberState = ClimberState.HOLD_POSITION_INIT;
+        }
+        break;
+      case EXTEND:
+        if (xboxController.getBButtonPressed()
+            || climberEncoder.get() >= ClimberConstants.climberExtendPosition) {
+          climberState = ClimberState.HOLD_POSITION_INIT;
+        }
+        break;
+    }
+  }
+
   private void climberControl() {
-    if (!limitswitch.get()) {
-      if (xboxController.getRightBumperButton()) {
-        climberMotor.set(-xboxController.getRightTriggerAxis());
-      } else if (xboxController.getRightTriggerAxis() > 0.1) {
-        climberMotor.set(xboxController.getLeftTriggerAxis());
-      } else if (xboxController.getAButton()) {
-        climberMotor.set(climberPID.calculate(climberEncoder.get(), 0));
-      } else if (xboxController.getBButton()) {
-        climberMotor.set(climberPID.calculate(climberEncoder.get(), 1836));
-      } else {
-        climberMotor.set(0);
-      }
-    } else {
-      climberMotor.set(0.1);
+    switchClimberState();
+    switch (climberState) {
+      case HOLD_POSITION_INIT:
+        climberPID.setSetpoint(climberEncoder.get());
+        break;
+      case HOLD_POSITION:
+        climberMotor.set(climberPID.calculate(climberEncoder.get()));
+      case PULL_BACK:
+        if (limitswitch.get() == false) {
+          climberMotor.set(-0.6);
+        } else {
+          climberMotor.set(0.0);
+        }
+        break;
+      case CONTINUOUS_UP_DOWN:
+        if (xboxController.getRightBumperButton()) {
+          climberMotor.set(-0.6);
+        } else if (xboxController.getRightTriggerAxis() > 0.1) {
+          climberMotor.set(xboxController.getRightTriggerAxis() * 0.6);
+        } else {
+          climberMotor.set(0.0);
+        }
+        break;
+      case EXTEND:
+        if (climberEncoder.get() < ClimberConstants.climberExtendPosition) {
+          climberMotor.set(0.5);
+        } else {
+          climberMotor.set(0.0);
+        }
+        break;
     }
   }
 
