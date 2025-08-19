@@ -180,6 +180,7 @@ public class Robot extends TimedRobot {
         } else {
           climberMotor.set(0.0);
         }
+        break;
       case PULL_BACK:
         if (limitswitch.get() == false) {
           climberMotor.set(-0.6);
