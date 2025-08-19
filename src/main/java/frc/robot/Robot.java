@@ -50,7 +50,7 @@ public class Robot extends TimedRobot {
     EXTEND,
   }
 
-  ClimberState climberState = ClimberState.HOLD_POSITION;
+  ClimberState climberState = ClimberState.HOLD_POSITION_INIT;
   Boolean climberIsPID = true;
 
   public Robot() {
