@@ -71,6 +71,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("climberMotorSpeed", climberMotor.get());
     SmartDashboard.putBoolean("LimitSwitchState", limitswitch.get());
     SmartDashboard.putString("ClimberState", climberState.toString());
+    SmartDashboard.putBoolean("ClimberIsPID", climberIsPID);
 
     climberEncoder.reset();
   }
@@ -84,6 +85,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("climberMotorSpeed", climberMotor.get());
     SmartDashboard.putBoolean("LimitSwitchState", limitswitch.get());
     SmartDashboard.putString("ClimberState", climberState.toString());
+    SmartDashboard.putBoolean("ClimberIsPID", climberIsPID);
   }
 
   @Override
