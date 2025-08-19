@@ -157,7 +157,7 @@ public class Robot extends TimedRobot {
         break;
       case CONTINUOUS_UP_DOWN:
         if (!xboxController.getRightBumperButton() &&
-            !(xboxController.getRightTriggerAxis() < 0.1)) {
+            !(xboxController.getRightTriggerAxis() > 0.1)) {
           climberState = ClimberState.HOLD_POSITION_INIT;
         }
         break;
