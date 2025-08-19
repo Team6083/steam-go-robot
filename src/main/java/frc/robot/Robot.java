@@ -4,13 +4,10 @@
 
 package frc.robot;
 
-import javax.xml.xpath.XPathNodes;
-
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
@@ -45,6 +42,17 @@ public class Robot extends TimedRobot {
   Encoder climberEncoder = new Encoder(9, 8);
   DigitalInput limitswitch = new DigitalInput(1);
 
+  enum ClimberState {
+    HOLD_POSITION_INIT,
+    HOLD_POSITION,
+    PULL_BACK,
+    CONTINUOUS_UP_DOWN,
+    EXTEND,
+  }
+
+  ClimberState climberState = ClimberState.HOLD_POSITION;
+  Boolean climberIsPID = true;
+
   public Robot() {
     rightFront.setInverted(DriveConstants.rightFrontInverted);
     rightBack.setInverted(DriveConstants.rightBackInverted);
@@ -62,6 +70,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("climberEncoder", climberEncoder.get());
     SmartDashboard.putNumber("climberMotorSpeed", climberMotor.get());
     SmartDashboard.putBoolean("LimitSwitchState", limitswitch.get());
+    SmartDashboard.putString("ClimberState", climberState.toString());
+
+    climberEncoder.reset();
   }
 
   @Override
@@ -72,6 +83,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("climberEncoder", climberEncoder.get());
     SmartDashboard.putNumber("climberMotorSpeed", climberMotor.get());
     SmartDashboard.putBoolean("LimitSwitchState", limitswitch.get());
+    SmartDashboard.putString("ClimberState", climberState.toString());
   }
 
   @Override
@@ -93,6 +105,8 @@ public class Robot extends TimedRobot {
     intakeControl();
 
     climberControl();
+
+    toggleClimberPID();
 
     resetClimberEncoder();
   }
@@ -117,16 +131,6 @@ public class Robot extends TimedRobot {
       intakeMotor.set(-intakeConstants.intakeMaxSpeed);
     }
   }
-
-  public enum ClimberState {
-    HOLD_POSITION_INIT,
-    HOLD_POSITION,
-    PULL_BACK,
-    CONTINUOUS_UP_DOWN,
-    EXTEND,
-  }
-
-  ClimberState climberState = ClimberState.HOLD_POSITION;
 
   private void switchClimberState() {
     switch (climberState) {
@@ -171,7 +175,11 @@ public class Robot extends TimedRobot {
         climberPID.setSetpoint(climberEncoder.get());
         break;
       case HOLD_POSITION:
-        climberMotor.set(climberPID.calculate(climberEncoder.get()));
+        if (climberIsPID) {
+          climberMotor.set(climberPID.calculate(climberEncoder.get()));
+        } else {
+          climberMotor.set(0.0);
+        }
       case PULL_BACK:
         if (limitswitch.get() == false) {
           climberMotor.set(-0.6);
@@ -183,18 +191,28 @@ public class Robot extends TimedRobot {
         if (xboxController.getRightBumperButton()) {
           climberMotor.set(-0.6);
         } else if (xboxController.getRightTriggerAxis() > 0.1) {
-          climberMotor.set(xboxController.getRightTriggerAxis() * 0.6);
+          climberMotor.set(0.6);
         } else {
           climberMotor.set(0.0);
         }
         break;
       case EXTEND:
-        if (climberEncoder.get() < ClimberConstants.climberExtendPosition) {
-          climberMotor.set(0.5);
+        if (climberIsPID) {
+          if (climberEncoder.get() < ClimberConstants.climberExtendPosition) {
+            climberMotor.set(0.5);
+          } else {
+            climberMotor.set(0.0);
+          }
         } else {
-          climberMotor.set(0.0);
+          climberState = ClimberState.HOLD_POSITION_INIT;
         }
         break;
+    }
+  }
+
+  private void toggleClimberPID() {
+    if (xboxController.getStartButtonPressed()) {
+      climberIsPID = !climberIsPID;
     }
   }
 
