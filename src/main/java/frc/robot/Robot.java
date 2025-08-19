@@ -140,7 +140,7 @@ public class Robot extends TimedRobot {
         climberState = ClimberState.HOLD_POSITION;
         break;
       case HOLD_POSITION:
-        if (xboxController.getAButton()) {
+        if (xboxController.getAButtonPressed()) {
           climberState = ClimberState.PULL_BACK;
         } else if (xboxController.getRightBumperButton()
             || xboxController.getRightTriggerAxis() > 0.1) {
