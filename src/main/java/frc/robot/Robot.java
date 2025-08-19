@@ -87,6 +87,8 @@ public class Robot extends TimedRobot {
     // intakeControl();
 
     climberControl();
+
+    resetClimberEncoder();
   }
 
   private void tankControl() {
@@ -116,11 +118,21 @@ public class Robot extends TimedRobot {
         climberMotor.set(-xboxController.getRightTriggerAxis());
       } else if (xboxController.getLeftTriggerAxis() > 0.1) {
         climberMotor.set(xboxController.getLeftTriggerAxis());
+      } else if (xboxController.getAButton()) {
+        climberMotor.set(climberPID.calculate(climberEncoder.get(), 0));
+      } else if (xboxController.getBButton()) {
+        climberMotor.set(climberPID.calculate(climberEncoder.get(), 800));
       } else {
         climberMotor.set(0);
       }
     } else {
       climberMotor.set(0.1);
+    }
+  }
+
+  private void resetClimberEncoder() {
+    if (xboxController.getBackButton()) {
+      climberEncoder.reset();
     }
   }
 
