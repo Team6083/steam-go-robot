@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,10 +39,7 @@ public class Robot extends TimedRobot {
       ClimberConstants.climberPIDKp,
       ClimberConstants.climberPIDKi,
       ClimberConstants.climberPIDKd);
-  DutyCycleEncoder climberEncoder = new DutyCycleEncoder(
-      ClimberConstants.climberEncoderChannel,
-      ClimberConstants.climberEncoderFullRange,
-      ClimberConstants.climberEncoderExpectedZero);
+  Encoder climberEncoder = new Encoder(9, 8);
 
   public Robot() {
     rightFront.setInverted(DriveConstants.rightFrontInverted);
@@ -92,13 +90,13 @@ public class Robot extends TimedRobot {
   }
 
   private void tankControl() {
-    if(!xboxController.getAButton()) {
+    if (!xboxController.getAButton()) {
       rightFront.set(xboxController.getRightY());
       leftFront.set(xboxController.getLeftY());
       rightBack.follow(rightFront);
       leftBack.follow(leftFront);
     }
-    
+
   }
 
   private void intakeControl() {
@@ -113,34 +111,18 @@ public class Robot extends TimedRobot {
   }
 
   private void climberControl() {
-    if (xboxController.getRightTriggerAxis() > 0.1) {
-      climberMotor.set(-xboxController.getRightTriggerAxis());
-    } else if (xboxController.getLeftTriggerAxis() > 0.1) {
-      climberMotor.set(xboxController.getLeftTriggerAxis());
+    if (climberEncoder.get() > 0) {
+      if (xboxController.getRightTriggerAxis() > 0.1) {
+        climberMotor.set(-xboxController.getRightTriggerAxis());
+      } else if (xboxController.getLeftTriggerAxis() > 0.1) {
+        climberMotor.set(xboxController.getLeftTriggerAxis());
+      } else {
+        climberMotor.set(0);
+      }
     } else {
-      // double currentPosition = climberEncoder.get();
-      climberMotor.set(0);
-    // if(xboxController.getAButtonPressed()){
-    //   double targetPosition = 7.7;
-    // }
-    // if(xboxController.getAButtonReleased()) {
-    //   double targetPosition = 97;
-    // }
-    if(xboxController.getAButton()){
-      rightFront.set(0.5);
-      leftFront.set(0.5);
-      rightBack.follow(rightFront);
-      leftBack.follow(leftFront);
-      climberPID.setSetpoint(100);
-    }else{
-      climberPID.setSetpoint(7.7);
+      climberMotor.set(0.1);
     }
-      climberMotor.set(kDefaultPeriod);
   }
-  }
-
-  
-  
 
   @Override
   public void disabledInit() {
