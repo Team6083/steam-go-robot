@@ -7,6 +7,7 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -40,6 +41,7 @@ public class Robot extends TimedRobot {
       ClimberConstants.climberPIDKi,
       ClimberConstants.climberPIDKd);
   Encoder climberEncoder = new Encoder(9, 8);
+  DigitalInput limitswitch = new DigitalInput(1);
 
   public Robot() {
     rightFront.setInverted(DriveConstants.rightFrontInverted);
@@ -57,6 +59,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("intakeMotorSpeed", intakeMotor.get());
     SmartDashboard.putNumber("climberEncoder", climberEncoder.get());
     SmartDashboard.putNumber("climberMotorSpeed", climberMotor.get());
+    SmartDashboard.putBoolean("LimitSwitchState", limitswitch.get());
   }
 
   @Override
@@ -66,6 +69,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("intakeMotorSpeed", intakeMotor.get());
     SmartDashboard.putNumber("climberEncoder", climberEncoder.get());
     SmartDashboard.putNumber("climberMotorSpeed", climberMotor.get());
+    SmartDashboard.putBoolean("LimitSwitchState", limitswitch.get());
   }
 
   @Override
@@ -84,7 +88,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     tankControl();
 
-    // intakeControl();
+    intakeControl();
 
     climberControl();
 
@@ -103,7 +107,7 @@ public class Robot extends TimedRobot {
 
   private void intakeControl() {
     if (xboxController.getLeftTriggerAxis() > 0.1) {
-      intakeMotor.set(xboxController.getRightTriggerAxis() * intakeConstants.intakeMaxSpeed);
+      intakeMotor.set(xboxController.getLeftTriggerAxis() * intakeConstants.intakeMaxSpeed);
     } else {
       intakeMotor.set(0.0);
     }
@@ -113,15 +117,15 @@ public class Robot extends TimedRobot {
   }
 
   private void climberControl() {
-    if (climberEncoder.get() > 0) {
-      if (xboxController.getRightTriggerAxis() > 0.1) {
+    if (!limitswitch.get()) {
+      if (xboxController.getRightBumperButton()) {
         climberMotor.set(-xboxController.getRightTriggerAxis());
-      } else if (xboxController.getLeftTriggerAxis() > 0.1) {
+      } else if (xboxController.getRightTriggerAxis() > 0.1) {
         climberMotor.set(xboxController.getLeftTriggerAxis());
       } else if (xboxController.getAButton()) {
         climberMotor.set(climberPID.calculate(climberEncoder.get(), 0));
       } else if (xboxController.getBButton()) {
-        climberMotor.set(climberPID.calculate(climberEncoder.get(), 800));
+        climberMotor.set(climberPID.calculate(climberEncoder.get(), 1836));
       } else {
         climberMotor.set(0);
       }
