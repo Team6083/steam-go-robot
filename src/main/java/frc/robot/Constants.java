@@ -16,7 +16,7 @@ public class Constants {
     public class intakeConstants {
         public static final int intakeMotorID = 21;
         public static final Boolean intakeMotorInverted = false;
-        public static final double intakeMaxSpeed = 0.4;
+        public static final double intakeMaxSpeed = 0.6;
     }
 
     public class ClimberConstants {

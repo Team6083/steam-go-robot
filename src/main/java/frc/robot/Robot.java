@@ -116,7 +116,7 @@ public class Robot extends TimedRobot {
   }
 
   private void tankControl() {
-    if (xboxController.getLeftBumperButton()) {
+    if (xboxController.getYButton()) {
       magnification = 0.75;
     } else {
       magnification = 0.5;
