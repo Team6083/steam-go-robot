@@ -42,6 +42,8 @@ public class Robot extends TimedRobot {
   Encoder climberEncoder = new Encoder(9, 8);
   DigitalInput limitswitch = new DigitalInput(1);
 
+  private double magnification;
+
   enum ClimberState {
     HOLD_POSITION_INIT,
     HOLD_POSITION,
@@ -114,9 +116,15 @@ public class Robot extends TimedRobot {
   }
 
   private void tankControl() {
+    if (xboxController.getLeftBumperButton()) {
+      magnification = 0.75;
+    } else {
+      magnification = 0.5;
+    }
+
     if (!xboxController.getAButton()) {
-      rightFront.set(xboxController.getRightY());
-      leftFront.set(xboxController.getLeftY());
+      rightFront.set(xboxController.getRightY()*magnification);
+      leftFront.set(xboxController.getLeftY()*magnification);
       rightBack.follow(rightFront);
       leftBack.follow(leftFront);
     }

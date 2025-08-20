@@ -27,7 +27,7 @@ public class Constants {
         public static final double climberEncoderFullRange = 360.0; // TODO: check
         public static final double climberEncoderExpectedZero = 0.0; // TODO: check
 
-        public static final double climberPIDKp = 0.00001; // TODO: check
+        public static final double climberPIDKp = 0.007; // TODO: check
         public static final double climberPIDKi = 0.0; // TODO: check
         public static final double climberPIDKd = 0.0; // TODO: check'
 
