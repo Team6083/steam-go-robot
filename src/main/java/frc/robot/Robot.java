@@ -152,11 +152,12 @@ public class Robot extends TimedRobot {
       leftFront.set(0.5);
       rightBack.follow(rightFront);
       leftBack.follow(leftFront);
-    } else if{
+    } else {
       rightFront.set(0.0);
       leftFront.set(0.0);
       rightBack.follow(rightFront);
       leftBack.follow(leftFront);
+      intakeMotor.set(0.4);
     }
 
     intakeMotor.set(0.4);
