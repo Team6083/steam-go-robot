@@ -122,23 +122,20 @@ public class Robot extends TimedRobot {
       magnification = 0.5;
     }
 
-    if (!xboxController.getAButton()) {
       rightFront.set(xboxController.getRightY() * magnification);
       leftFront.set(xboxController.getLeftY() * magnification);
       rightBack.follow(rightFront);
       leftBack.follow(leftFront);
-    }
 
   }
 
   private void intakeControl() {
     if (xboxController.getLeftTriggerAxis() > 0.1) {
       intakeMotor.set(xboxController.getLeftTriggerAxis() * intakeConstants.intakeMaxSpeed);
+    } else if (xboxController.getLeftBumperButton()) {
+      intakeMotor.set(-intakeConstants.intakeMaxSpeed);
     } else {
       intakeMotor.set(0.0);
-    }
-    if (xboxController.getLeftBumperButton()) {
-      intakeMotor.set(-intakeConstants.intakeMaxSpeed);
     }
   }
 
