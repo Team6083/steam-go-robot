@@ -16,7 +16,7 @@ public class Constants {
     public class intakeConstants {
         public static final int intakeMotorID = 21;
         public static final Boolean intakeMotorInverted = false;
-        public static final double intakeMaxSpeed = 0.6;
+        public static final double intakeMaxSpeed = 0.4;
     }
 
     public class ClimberConstants {
@@ -27,7 +27,7 @@ public class Constants {
         public static final double climberEncoderFullRange = 360.0; // TODO: check
         public static final double climberEncoderExpectedZero = 0.0; // TODO: check
 
-        public static final double climberPIDKp = 0.007; // TODO: check
+        public static final double climberPIDKp = 0.015;// TODO: check
         public static final double climberPIDKi = 0.0; // TODO: check
         public static final double climberPIDKd = 0.0; // TODO: check'
 
