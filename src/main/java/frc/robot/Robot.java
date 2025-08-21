@@ -10,7 +10,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
@@ -55,6 +57,14 @@ public class Robot extends TimedRobot {
   ClimberState climberState = ClimberState.HOLD_POSITION_INIT;
   Boolean climberIsPID = true;
 
+  Timer timer = new Timer();
+
+  final String kDefaultAuto = "Default";
+  final String kForward = "Forward";
+  final String kMOneCoral = "M - one coral";
+  SendableChooser<String> autoChooser = new SendableChooser<>();
+  String autoSelected;
+
   public Robot() {
     rightFront.setInverted(DriveConstants.rightFrontInverted);
     rightBack.setInverted(DriveConstants.rightBackInverted);
@@ -76,6 +86,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("ClimberIsPID", climberIsPID);
 
     climberEncoder.reset();
+
+    autoChooser.setDefaultOption("Default Auto", kDefaultAuto);
+    autoChooser.addOption("Forward", kForward);
+    autoChooser.addOption("M - one Coral", kMOneCoral);
+    SmartDashboard.putData("Auto chooser", autoChooser);
   }
 
   @Override
@@ -92,10 +107,59 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    timer.reset();
+    timer.start();
+    autoSelected = autoChooser.getSelected();
   }
 
   @Override
   public void autonomousPeriodic() {
+    SmartDashboard.putString("Auto selected", autoSelected);
+
+    switch (autoSelected) {
+      case kDefaultAuto:
+        // Do nothing in default auto
+        break;
+      case kForward:
+        forward();
+        break;
+      case kMOneCoral:
+        MOneCoral();
+        break;
+      default:
+        System.out.println("Unknown auto selected: " + autoSelected);
+        break;
+    }
+  }
+
+  private void forward() {
+    if (timer.get() < 2.0) {
+      rightFront.set(0.5);
+      leftFront.set(0.5);
+      rightBack.follow(rightFront);
+      leftBack.follow(leftFront);
+    } else {
+      rightFront.set(0.0);
+      leftFront.set(0.0);
+      rightBack.follow(rightFront);
+      leftBack.follow(leftFront);
+    }
+  }
+
+  private void MOneCoral() {
+    if (timer.get() < 2.0) {
+      rightFront.set(0.5);
+      leftFront.set(0.5);
+      rightBack.follow(rightFront);
+      leftBack.follow(leftFront);
+    } else if{
+      rightFront.set(0.0);
+      leftFront.set(0.0);
+      rightBack.follow(rightFront);
+      leftBack.follow(leftFront);
+    }
+
+    intakeMotor.set(0.4);
   }
 
   @Override
