@@ -20,7 +20,7 @@ public class Constants {
     }
 
     public class ClimberConstants {
-        public static final int climberMotorID = 22; 
+        public static final int climberMotorID = 22;
         public static final Boolean climberMotorInverted = true;
         public static final int climberEncoderChannel = 9;
 

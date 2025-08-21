@@ -123,8 +123,8 @@ public class Robot extends TimedRobot {
     }
 
     if (!xboxController.getAButton()) {
-      rightFront.set(xboxController.getRightY()*magnification);
-      leftFront.set(xboxController.getLeftY()*magnification);
+      rightFront.set(xboxController.getRightY() * magnification);
+      leftFront.set(xboxController.getLeftY() * magnification);
       rightBack.follow(rightFront);
       leftBack.follow(leftFront);
     }
