@@ -100,6 +100,8 @@ public class Robot extends TimedRobot {
     climberEncoder.reset();
     climberPID.setSetpoint(0);
 
+    gyro.reset();
+
     autoChooser.setDefaultOption("Default Auto", kDefaultAuto);
     autoChooser.addOption("Forward", kForward);
     autoChooser.addOption("M - one Coral", kMOneCoral);
