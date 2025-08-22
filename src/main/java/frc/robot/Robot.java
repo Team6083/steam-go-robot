@@ -260,7 +260,6 @@ public class Robot extends TimedRobot {
     leftFront.set(xboxController.getLeftY() * magnification);
     rightBack.follow(rightFront);
     leftBack.follow(leftFront);
-
   }
 
   private void intakeControl() {
@@ -289,7 +288,7 @@ public class Robot extends TimedRobot {
         }
         break;
       case PULL_BACK:
-        if (xboxController.getAButtonPressed()
+        if (xboxController.getXButtonPressed()
             || limitswitch.get()) {
           climberState = ClimberState.HOLD_POSITION_INIT;
         }
@@ -302,7 +301,7 @@ public class Robot extends TimedRobot {
         break;
       case EXTEND:
         if (climberIsPID) {
-          if (xboxController.getBButtonPressed()
+          if (xboxController.getXButtonPressed()
               || climberEncoder.get() >= ClimberConstants.climberExtendPosition) {
             climberState = ClimberState.HOLD_POSITION_INIT;
           }
