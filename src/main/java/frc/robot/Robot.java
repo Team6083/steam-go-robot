@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -62,9 +63,12 @@ public class Robot extends TimedRobot {
 
   Timer timer = new Timer();
 
+  AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
+
   final String kDefaultAuto = "Default";
   final String kForward = "Forward";
   final String kMOneCoral = "M - one coral";
+  final String kback = "M one coral and back";
   final String kROneCoral = "R - one coral";
   SendableChooser<String> autoChooser = new SendableChooser<>();
   String autoSelected;
@@ -91,6 +95,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("ClimberState", climberState.toString());
     SmartDashboard.putBoolean("ClimberIsPID", climberIsPID);
     SmartDashboard.putNumber("Timer", timer.get());
+    SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
 
     climberEncoder.reset();
     climberPID.setSetpoint(0);
@@ -99,10 +104,11 @@ public class Robot extends TimedRobot {
     autoChooser.addOption("Forward", kForward);
     autoChooser.addOption("M - one Coral", kMOneCoral);
     autoChooser.addOption("R - one coral", kROneCoral);
+    autoChooser.addOption("M one coral and back", kback);
     SmartDashboard.putData("Auto chooser", autoChooser);
     SmartDashboard.putNumber("Timer", timer.get());
 
-    if(saveLog) {
+    if (saveLog) {
       DataLogManager.start();
       DriverStation.startDataLog(DataLogManager.getLog());
     }
@@ -129,7 +135,7 @@ public class Robot extends TimedRobot {
         BuildConstants.DIRTY == 1 ? "Dirty" : "Clean"));
     SmartDashboard.putString("BuildDate", BuildConstants.BUILD_DATE);
   }
-  
+
   @Override
   public void robotPeriodic() {
     SmartDashboard.putNumber("tankRightSpeed", rightFront.get());
@@ -141,6 +147,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("ClimberState", climberState.toString());
     SmartDashboard.putBoolean("ClimberIsPID", climberIsPID);
     SmartDashboard.putNumber("Timer", timer.get());
+    SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
   }
 
   @Override
@@ -167,6 +174,8 @@ public class Robot extends TimedRobot {
       case kROneCoral:
         ROneCoral();
         break;
+      case kback:
+        MOneCoralAndBack();
       default:
         System.out.println("Unknown auto selected: " + autoSelected);
         break;
@@ -200,6 +209,32 @@ public class Robot extends TimedRobot {
       leftBack.follow(leftFront);
       intakeMotor.set(0.4);
     }
+  }
+
+  private void MOneCoralAndBack() {
+    if (timer.get() < 2.0) {
+      rightFront.set(-0.5);
+      leftFront.set(-0.5);
+    } else if (timer.get() < 3.0) {
+      rightFront.set(0.0);
+      leftFront.set(0.0);
+
+      intakeMotor.set(0.4);
+    } else if (timer.get() < 4.5) {
+      rightFront.set(0.2);
+      leftFront.set(0.2);
+
+      intakeMotor.set(0.0);
+    } else if (gyro.getAngle() > -120) {
+      rightFront.set(-0.2);
+      leftFront.set(0.2);
+    } else {
+      rightFront.set(0.0);
+      leftFront.set(0.0);
+    }
+
+    rightBack.follow(rightFront);
+    leftBack.follow(leftFront);
   }
 
   private void ROneCoral() {
