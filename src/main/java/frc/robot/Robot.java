@@ -7,7 +7,9 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -66,6 +68,8 @@ public class Robot extends TimedRobot {
   SendableChooser<String> autoChooser = new SendableChooser<>();
   String autoSelected;
 
+  final boolean saveLog = true;
+
   public Robot() {
     rightFront.setInverted(DriveConstants.rightFrontInverted);
     rightBack.setInverted(DriveConstants.rightBackInverted);
@@ -96,6 +100,11 @@ public class Robot extends TimedRobot {
     autoChooser.addOption("R - one coral", kROneCoral);
     SmartDashboard.putData("Auto chooser", autoChooser);
     SmartDashboard.putNumber("Timer", timer.get());
+
+    if(saveLog) {
+      DataLogManager.start();
+      DriverStation.startDataLog(DataLogManager.getLog());
+    }
   }
 
   @Override
