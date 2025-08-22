@@ -7,6 +7,7 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -107,6 +108,28 @@ public class Robot extends TimedRobot {
     }
   }
 
+  @Override
+  public void robotInit() {
+    NetworkTableInstance.getDefault().getStringTopic("/Metadata/BuildDate").publish()
+        .set(BuildConstants.BUILD_DATE);
+    NetworkTableInstance.getDefault().getStringTopic("/Metadata/GitBranch").publish()
+        .set(BuildConstants.GIT_BRANCH);
+    NetworkTableInstance.getDefault().getStringTopic("/Metadata/GitDate").publish()
+        .set(BuildConstants.GIT_DATE);
+    NetworkTableInstance.getDefault().getStringTopic("/Metadata/GitDirty").publish()
+        .set(BuildConstants.DIRTY == 1 ? "Dirty!" : "Clean! Good job!");
+    NetworkTableInstance.getDefault().getStringTopic("/Metadata/GitSHA").publish()
+        .set(BuildConstants.GIT_SHA);
+    NetworkTableInstance.getDefault().getStringTopic("/Metadata/GitBranch").publish()
+        .set(BuildConstants.GIT_BRANCH);
+
+    SmartDashboard.putString("GitInfo", String.format("%s (%s), %s",
+        BuildConstants.GIT_SHA,
+        BuildConstants.GIT_BRANCH,
+        BuildConstants.DIRTY == 1 ? "Dirty" : "Clean"));
+    SmartDashboard.putString("BuildDate", BuildConstants.BUILD_DATE);
+  }
+  
   @Override
   public void robotPeriodic() {
     SmartDashboard.putNumber("tankRightSpeed", rightFront.get());
