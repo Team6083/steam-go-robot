@@ -86,6 +86,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("ClimberIsPID", climberIsPID);
 
     climberEncoder.reset();
+    climberPID.setSetpoint(0);
 
     autoChooser.setDefaultOption("Default Auto", kDefaultAuto);
     autoChooser.addOption("Forward", kForward);
