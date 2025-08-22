@@ -68,7 +68,7 @@ public class Robot extends TimedRobot {
   final String kDefaultAuto = "Default";
   final String kForward = "Forward";
   final String kMOneCoral = "M - one coral";
-  final String kback = "M one coral and back";
+  final String kOneCoralAndBack = "M - one coral and back";
   final String kROneCoral = "R - one coral";
   SendableChooser<String> autoChooser = new SendableChooser<>();
   String autoSelected;
@@ -104,7 +104,7 @@ public class Robot extends TimedRobot {
     autoChooser.addOption("Forward", kForward);
     autoChooser.addOption("M - one Coral", kMOneCoral);
     autoChooser.addOption("R - one coral", kROneCoral);
-    autoChooser.addOption("M one coral and back", kback);
+    autoChooser.addOption("M one coral and back", kOneCoralAndBack);
     SmartDashboard.putData("Auto chooser", autoChooser);
     SmartDashboard.putNumber("Timer", timer.get());
 
@@ -174,7 +174,7 @@ public class Robot extends TimedRobot {
       case kROneCoral:
         ROneCoral();
         break;
-      case kback:
+      case kOneCoralAndBack:
         MOneCoralAndBack();
         break;
       default:
