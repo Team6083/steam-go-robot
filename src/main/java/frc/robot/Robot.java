@@ -62,6 +62,7 @@ public class Robot extends TimedRobot {
   final String kDefaultAuto = "Default";
   final String kForward = "Forward";
   final String kMOneCoral = "M - one coral";
+  final String kROneCoral = "R - one coral";
   SendableChooser<String> autoChooser = new SendableChooser<>();
   String autoSelected;
 
@@ -84,6 +85,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("LimitSwitchState", limitswitch.get());
     SmartDashboard.putString("ClimberState", climberState.toString());
     SmartDashboard.putBoolean("ClimberIsPID", climberIsPID);
+    SmartDashboard.putNumber("Timer", timer.get());
 
     climberEncoder.reset();
     climberPID.setSetpoint(0);
@@ -91,7 +93,9 @@ public class Robot extends TimedRobot {
     autoChooser.setDefaultOption("Default Auto", kDefaultAuto);
     autoChooser.addOption("Forward", kForward);
     autoChooser.addOption("M - one Coral", kMOneCoral);
+    autoChooser.addOption("R - one coral", kROneCoral);
     SmartDashboard.putData("Auto chooser", autoChooser);
+    SmartDashboard.putNumber("Timer", timer.get());
   }
 
   @Override
@@ -104,6 +108,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("LimitSwitchState", limitswitch.get());
     SmartDashboard.putString("ClimberState", climberState.toString());
     SmartDashboard.putBoolean("ClimberIsPID", climberIsPID);
+    SmartDashboard.putNumber("Timer", timer.get());
   }
 
   @Override
@@ -127,6 +132,9 @@ public class Robot extends TimedRobot {
       case kMOneCoral:
         MOneCoral();
         break;
+      case kROneCoral:
+        ROneCoral();
+        break;
       default:
         System.out.println("Unknown auto selected: " + autoSelected);
         break;
@@ -134,7 +142,7 @@ public class Robot extends TimedRobot {
   }
 
   private void forward() {
-    if (timer.get() < 2.0) {
+    if (timer.get() < 0.5) {
       rightFront.set(-0.5);
       leftFront.set(-0.5);
       rightBack.follow(rightFront);
@@ -164,6 +172,20 @@ public class Robot extends TimedRobot {
     intakeMotor.set(0.4);
   }
 
+  private void ROneCoral() {
+    if (timer.get() < 2.0) {
+      rightFront.set(0.1);
+      leftFront.set(0.2);
+      rightBack.follow(rightFront);
+      leftBack.follow(leftFront);
+    } else {
+      rightFront.set(0);
+      leftFront.set(0);
+      rightBack.follow(rightFront);
+      rightBack.follow(leftFront);
+    }
+  }
+
   @Override
   public void teleopInit() {
   }
@@ -184,6 +206,8 @@ public class Robot extends TimedRobot {
   private void tankControl() {
     if (xboxController.getYButton()) {
       magnification = 0.75;
+    } else if (climberEncoder.get() >= 1700) {
+      magnification = 0.3;
     } else {
       magnification = 0.5;
     }
