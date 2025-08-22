@@ -200,8 +200,6 @@ public class Robot extends TimedRobot {
       leftBack.follow(leftFront);
       intakeMotor.set(0.4);
     }
-
-    intakeMotor.set(0.4);
   }
 
   private void ROneCoral() {
