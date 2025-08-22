@@ -182,59 +182,43 @@ public class Robot extends TimedRobot {
     }
   }
 
+  private void autoCmd(double rightSpeed, double leftSpeed, double intakeSpeed) {
+    rightFront.set(rightSpeed);
+    leftFront.set(leftSpeed);
+    rightBack.follow(rightFront);
+    leftBack.follow(leftFront);
+
+    intakeMotor.set(intakeSpeed);
+  }
+
   private void forward() {
     if (timer.get() < 2) {
-      rightFront.set(-0.5);
-      leftFront.set(-0.5);
-      rightBack.follow(rightFront);
-      leftBack.follow(leftFront);
+      autoCmd(-0.5, -0.5, 0);
     } else {
-      rightFront.set(0.0);
-      leftFront.set(0.0);
-      rightBack.follow(rightFront);
-      leftBack.follow(leftFront);
+      autoCmd(0.0, 0.0, 0.0);
     }
   }
 
   private void MOneCoral() {
     if (timer.get() < 2.0) {
-      rightFront.set(-0.5);
-      leftFront.set(-0.5);
-      rightBack.follow(rightFront);
-      leftBack.follow(leftFront);
+      autoCmd(-0.5, -0.5, 0);
     } else {
-      rightFront.set(0.0);
-      leftFront.set(0.0);
-      rightBack.follow(rightFront);
-      leftBack.follow(leftFront);
-      intakeMotor.set(0.4);
+      autoCmd(0.0, 0.0, 0.4);
     }
   }
 
   private void MOneCoralAndBack() {
     if (timer.get() < 2.0) {
-      rightFront.set(-0.5);
-      leftFront.set(-0.5);
+      autoCmd(-0.5, -0.5, 0.0);
     } else if (timer.get() < 3.0) {
-      rightFront.set(0.0);
-      leftFront.set(0.0);
-
-      intakeMotor.set(0.4);
+      autoCmd(0.0, 0.0, 0.4);
     } else if (timer.get() < 4.5) {
-      rightFront.set(0.2);
-      leftFront.set(0.2);
-
-      intakeMotor.set(0.0);
+      autoCmd(0.2,0.2,0.0);
     } else if (gyro.getAngle() > -120) {
-      rightFront.set(-0.2);
-      leftFront.set(0.2);
+      autoCmd(-0.2, 0.2, 0.0);
     } else {
-      rightFront.set(0.0);
-      leftFront.set(0.0);
+      autoCmd(0.0, 0.0, 0.0);
     }
-
-    rightBack.follow(rightFront);
-    leftBack.follow(leftFront);
   }
 
   private void ROneCoral() {
