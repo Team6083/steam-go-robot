@@ -176,6 +176,7 @@ public class Robot extends TimedRobot {
         break;
       case kback:
         MOneCoralAndBack();
+        break;
       default:
         System.out.println("Unknown auto selected: " + autoSelected);
         break;
@@ -223,15 +224,9 @@ public class Robot extends TimedRobot {
 
   private void ROneCoral() {
     if (timer.get() < 2.0) {
-      rightFront.set(0.1);
-      leftFront.set(0.2);
-      rightBack.follow(rightFront);
-      leftBack.follow(leftFront);
+      autoCmd(0.1, 0.2, 0.0);
     } else {
-      rightFront.set(0);
-      leftFront.set(0);
-      rightBack.follow(rightFront);
-      rightBack.follow(leftFront);
+      autoCmd(0, 0, 0);
     }
   }
 
