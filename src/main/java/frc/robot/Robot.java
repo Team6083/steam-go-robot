@@ -134,8 +134,8 @@ public class Robot extends TimedRobot {
 
   private void forward() {
     if (timer.get() < 2.0) {
-      rightFront.set(0.5);
-      leftFront.set(0.5);
+      rightFront.set(-0.5);
+      leftFront.set(-0.5);
       rightBack.follow(rightFront);
       leftBack.follow(leftFront);
     } else {
@@ -148,8 +148,8 @@ public class Robot extends TimedRobot {
 
   private void MOneCoral() {
     if (timer.get() < 2.0) {
-      rightFront.set(0.5);
-      leftFront.set(0.5);
+      rightFront.set(-0.5);
+      leftFront.set(-0.5);
       rightBack.follow(rightFront);
       leftBack.follow(leftFront);
     } else {
