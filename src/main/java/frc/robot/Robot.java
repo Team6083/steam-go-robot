@@ -142,7 +142,7 @@ public class Robot extends TimedRobot {
   }
 
   private void forward() {
-    if (timer.get() < 0.5) {
+    if (timer.get() < 2) {
       rightFront.set(-0.5);
       leftFront.set(-0.5);
       rightBack.follow(rightFront);
