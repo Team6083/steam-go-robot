@@ -68,7 +68,8 @@ public class Robot extends TimedRobot {
   final String kDefaultAuto = "Default";
   final String kForward = "Forward";
   final String kMOneCoral = "M - one coral";
-  final String kOneCoralAndBack = "M - one coral and back";
+  final String kOneCoralAndBackL = "M - one coral and back left";
+  final String kOneCoralAndBackR = "M - one coral and back right";
   final String kROneCoral = "R - one coral";
   SendableChooser<String> autoChooser = new SendableChooser<>();
   String autoSelected;
@@ -106,7 +107,8 @@ public class Robot extends TimedRobot {
     autoChooser.addOption("Forward", kForward);
     autoChooser.addOption("M - one Coral", kMOneCoral);
     autoChooser.addOption("R - one coral", kROneCoral);
-    autoChooser.addOption("M one coral and back", kOneCoralAndBack);
+    autoChooser.addOption("M one coral and back", kOneCoralAndBackL);
+    autoChooser.addOption("M - one coral and back right", kOneCoralAndBackR);
     SmartDashboard.putData("Auto chooser", autoChooser);
     SmartDashboard.putNumber("Timer", timer.get());
 
@@ -176,9 +178,11 @@ public class Robot extends TimedRobot {
       case kROneCoral:
         ROneCoral();
         break;
-      case kOneCoralAndBack:
-        MOneCoralAndBack();
+      case kOneCoralAndBackL:
+        MOneCoralAndBackL();
         break;
+      case kOneCoralAndBackR;
+        MOneCoralAndBackR();
       default:
         System.out.println("Unknown auto selected: " + autoSelected);
         break;
@@ -210,15 +214,29 @@ public class Robot extends TimedRobot {
     }
   }
 
-  private void MOneCoralAndBack() {
+  private void MOneCoralAndBackL() {
     if (timer.get() < 2.0) {
       autoCmd(-0.5, -0.5, 0.0);
     } else if (timer.get() < 3.0) {
       autoCmd(0.0, 0.0, 0.4);
     } else if (timer.get() < 4.5) {
-      autoCmd(0.2,0.2,0.0);
+      autoCmd(0.2, 0.2, 0.0);
     } else if (gyro.getAngle() > -120) {
       autoCmd(-0.2, 0.2, 0.0);
+    } else {
+      autoCmd(0.0, 0.0, 0.0);
+    }
+  }
+
+  private void MOneCoralAndBackR() {
+    if (timer.get() < 2.0) {
+      autoCmd(-0.5, -0.5, 0.0);
+    } else if (timer.get() < 3.0) {
+      autoCmd(0.0, 0.0, 0.4);
+    } else if (timer.get() < 4.5) {
+      autoCmd(0.2, 0.2, 0.0);
+    } else if (gyro.getAngle() < 120) {
+      autoCmd(0.2, -0.2, 0.0);
     } else {
       autoCmd(0.0, 0.0, 0.0);
     }
