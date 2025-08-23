@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import javax.sound.sampled.CompoundControl;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.studica.frc.AHRS;
 
@@ -32,6 +34,7 @@ import frc.robot.Constants.intakeConstants;
 public class Robot extends TimedRobot {
 
   XboxController xboxController = new XboxController(0);
+  XboxController coController = new XboxController(1);
 
   WPI_VictorSPX rightFront = new WPI_VictorSPX(DriveConstants.rightFrontID);
   WPI_VictorSPX rightBack = new WPI_VictorSPX(DriveConstants.rightBackID);
@@ -267,19 +270,43 @@ public class Robot extends TimedRobot {
     resetClimberEncoder();
   }
 
+  Boolean tankInverted = false;
+
   private void tankControl() {
-    if (xboxController.getYButton()) {
-      magnification = 0.75;
-    } else if (climberEncoder.get() >= 1700) {
-      magnification = 0.3;
-    } else {
-      magnification = 0.5;
+    if (coController.getYButton()) {
+      tankInverted = true;
+    }
+    if (coController.getAButton()) {
+      tankInverted = false;
     }
 
-    rightFront.set(xboxController.getRightY() * magnification);
-    leftFront.set(xboxController.getLeftY() * magnification);
-    rightBack.follow(rightFront);
-    leftBack.follow(leftFront);
+    if (tankInverted) {
+      if (xboxController.getYButton()) {
+        magnification = -0.75;
+      } else if (climberEncoder.get() >= 1700) {
+        magnification = -0.3;
+      } else {
+        magnification = -0.5;
+      }
+      rightFront.set(xboxController.getLeftY() * magnification);
+      leftFront.set(xboxController.getRightY() * magnification);
+      rightBack.follow(rightFront);
+      leftBack.follow(leftFront);
+
+    } else {
+      if (xboxController.getYButton()) {
+        magnification = 0.75;
+      } else if (climberEncoder.get() >= 1700) {
+        magnification = 0.3;
+      } else {
+        magnification = 0.5;
+      }
+      rightFront.set(xboxController.getRightY() * magnification);
+      leftFront.set(xboxController.getLeftY() * magnification);
+      rightBack.follow(rightFront);
+      leftBack.follow(leftFront);
+    }
+
   }
 
   private void intakeControl() {
