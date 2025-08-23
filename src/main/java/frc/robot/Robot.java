@@ -282,12 +282,12 @@ public class Robot extends TimedRobot {
     }
 
     if (tankInverted) {
-      if (xboxController.getYButton()) {
-        magnification = -0.75;
+      if (coController.getRightTriggerAxis() > 0.1) {
+        magnification = -0.5;
       } else if (climberEncoder.get() >= 1700) {
         magnification = -0.3;
       } else {
-        magnification = -0.5;
+        magnification = -0.8;
       }
       rightFront.set(xboxController.getLeftY() * magnification);
       leftFront.set(xboxController.getRightY() * magnification);
@@ -295,12 +295,12 @@ public class Robot extends TimedRobot {
       leftBack.follow(leftFront);
 
     } else {
-      if (xboxController.getYButton()) {
-        magnification = 0.75;
+      if (coController.getRightTriggerAxis() > 0.1) {
+        magnification = 0.5;
       } else if (climberEncoder.get() >= 1700) {
         magnification = 0.3;
       } else {
-        magnification = 0.5;
+        magnification = 0.8;
       }
       rightFront.set(xboxController.getRightY() * magnification);
       leftFront.set(xboxController.getLeftY() * magnification);
