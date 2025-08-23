@@ -107,7 +107,7 @@ public class Robot extends TimedRobot {
     autoChooser.addOption("Forward", kForward);
     autoChooser.addOption("M - one Coral", kMOneCoral);
     autoChooser.addOption("R - one coral", kROneCoral);
-    autoChooser.addOption("M one coral and back", kOneCoralAndBackL);
+    autoChooser.addOption("M one coral and back left", kOneCoralAndBackL);
     autoChooser.addOption("M - one coral and back right", kOneCoralAndBackR);
     SmartDashboard.putData("Auto chooser", autoChooser);
     SmartDashboard.putNumber("Timer", timer.get());
