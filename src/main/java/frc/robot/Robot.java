@@ -4,11 +4,10 @@
 
 package frc.robot;
 
-import javax.sound.sampled.CompoundControl;
-
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.studica.frc.AHRS;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -119,6 +118,8 @@ public class Robot extends TimedRobot {
       DataLogManager.start();
       DriverStation.startDataLog(DataLogManager.getLog());
     }
+
+    CameraServer.startAutomaticCapture();
   }
 
   @Override
