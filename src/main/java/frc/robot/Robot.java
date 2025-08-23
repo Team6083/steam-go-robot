@@ -181,7 +181,7 @@ public class Robot extends TimedRobot {
       case kOneCoralAndBackL:
         MOneCoralAndBackL();
         break;
-      case kOneCoralAndBackR;
+      case kOneCoralAndBackR:
         MOneCoralAndBackR();
       default:
         System.out.println("Unknown auto selected: " + autoSelected);
