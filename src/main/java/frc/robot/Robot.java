@@ -329,8 +329,8 @@ public class Robot extends TimedRobot {
         }
         break;
       case CONTINUOUS_UP_DOWN:
-        if (!mainController.getRightBumperButton() &&
-            !(mainController.getRightTriggerAxis() > 0.1)) {
+        if (!mainController.getRightBumperButton()
+            && !(mainController.getRightTriggerAxis() > 0.1)) {
           climberState = ClimberState.HOLD_POSITION_INIT;
         }
         break;
