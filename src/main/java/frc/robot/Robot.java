@@ -66,12 +66,12 @@ public class Robot extends TimedRobot {
 
   AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
 
-  final String DefaultAuto = "Default";
-  final String Forward = "Forward";
-  final String MiddleOneCoral = "M - one coral";
-  final String MiddleOneCoralAndBackLeft = "M - one coral and back left";
-  final String MiddleOneCoralAndBackRight = "M - one coral and back right";
-  final String RightOneCoral = "R - one coral";
+  final String defaultAuto = "Default";
+  final String forward = "Forward";
+  final String middleOneCoral = "M - one coral";
+  final String middleOneCoralAndBackLeft = "M - one coral and back left";
+  final String middleOneCoralAndBackRight = "M - one coral and back right";
+  final String rightOneCoral = "R - one coral";
   SendableChooser<String> autoChooser = new SendableChooser<>();
   String autoSelected;
 
@@ -105,12 +105,12 @@ public class Robot extends TimedRobot {
 
     gyro.reset();
 
-    autoChooser.setDefaultOption("Default Auto", DefaultAuto);
-    autoChooser.addOption("Forward", Forward);
-    autoChooser.addOption("M - one Coral", MiddleOneCoral);
-    autoChooser.addOption("R - one coral", RightOneCoral);
-    autoChooser.addOption("M one coral and back left", MiddleOneCoralAndBackLeft);
-    autoChooser.addOption("M - one coral and back right", MiddleOneCoralAndBackRight);
+    autoChooser.setDefaultOption("Default Auto", defaultAuto);
+    autoChooser.addOption("Forward", forward);
+    autoChooser.addOption("M - one Coral", middleOneCoral);
+    autoChooser.addOption("R - one coral", rightOneCoral);
+    autoChooser.addOption("M one coral and back left", middleOneCoralAndBackLeft);
+    autoChooser.addOption("M - one coral and back right", middleOneCoralAndBackRight);
     SmartDashboard.putData("Auto chooser", autoChooser);
 
     SmartDashboard.putData(climberPID);
@@ -162,23 +162,23 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Auto selected", autoSelected);
 
     switch (autoSelected) {
-      case DefaultAuto:
+      case defaultAuto:
         // Do nothing in default auto
         break;
-      case Forward:
+      case forward:
         forward();
         break;
-      case MiddleOneCoral:
-        MiddleOneCoral();
+      case middleOneCoral:
+        middleOneCoral();
         break;
-      case RightOneCoral:
-        RightOneCoral();
+      case rightOneCoral:
+        rightOneCoral();
         break;
-      case MiddleOneCoralAndBackLeft:
-        MiddleOneCoralAndBackLeft();
+      case middleOneCoralAndBackLeft:
+        middleOneCoralAndBackLeft();
         break;
-      case MiddleOneCoralAndBackRight:
-        MiddleOneCoralAndBackRight();
+      case middleOneCoralAndBackRight:
+        middleOneCoralAndBackRight();
       default:
         System.out.println("Unknown auto selected: " + autoSelected);
         break;
@@ -202,7 +202,7 @@ public class Robot extends TimedRobot {
     }
   }
 
-  private void MiddleOneCoral() {
+  private void middleOneCoral() {
     if (timer.get() < 2.0) {
       autoCmd(-0.5, -0.5, 0.0);
     } else {
@@ -210,7 +210,7 @@ public class Robot extends TimedRobot {
     }
   }
 
-  private void MiddleOneCoralAndBackLeft() {
+  private void middleOneCoralAndBackLeft() {
     if (timer.get() < 2.0) {
       autoCmd(-0.5, -0.5, 0.0);
     } else if (timer.get() < 3.0) {
@@ -224,7 +224,7 @@ public class Robot extends TimedRobot {
     }
   }
 
-  private void MiddleOneCoralAndBackRight() {
+  private void middleOneCoralAndBackRight() {
     if (timer.get() < 2.0) {
       autoCmd(-0.5, -0.5, 0.0);
     } else if (timer.get() < 3.0) {
@@ -238,7 +238,7 @@ public class Robot extends TimedRobot {
     }
   }
 
-  private void RightOneCoral() {
+  private void rightOneCoral() {
     if (timer.get() < 2.0) {
       autoCmd(0.1, 0.2, 0.0);
     } else {
