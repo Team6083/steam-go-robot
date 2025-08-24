@@ -22,15 +22,18 @@ public class Constants {
   public class ClimberConstants {
     public static final int climberMotorID = 22;
     public static final Boolean climberMotorInverted = true;
-    public static final int climberEncoderChannel = 9;
+    public static final int climberEncoderChannelA = 9;
+    public static final int climberEncoderChannelB = 8;
 
-    public static final double climberEncoderFullRange = 360.0; // TODO: check
-    public static final double climberEncoderExpectedZero = 0.0; // TODO: check
+    public static final double climberEncoderFullRange = 360.0;
+    public static final double climberEncoderExpectedZero = 0.0;
 
-    public static final double climberPIDKp = 0.015;// TODO: check
-    public static final double climberPIDKi = 0.0; // TODO: check
-    public static final double climberPIDKd = 0.0; // TODO: check'
+    public static final double climberPIDKp = 0.015;
+    public static final double climberPIDKi = 0.0;
+    public static final double climberPIDKd = 0.0;
 
     public static final double climberExtendPosition = 1836;
+
+    public static final int limitswitchChannel = 1;
   }
 }

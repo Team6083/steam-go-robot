@@ -5,12 +5,18 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-
+import com.studica.frc.AHRS;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
@@ -25,7 +31,8 @@ import frc.robot.Constants.intakeConstants;
  */
 public class Robot extends TimedRobot {
 
-  XboxController xboxController = new XboxController(0);
+  XboxController mainController = new XboxController(0);
+  XboxController coController = new XboxController(1);
 
   WPI_VictorSPX rightFront = new WPI_VictorSPX(DriveConstants.rightFrontID);
   WPI_VictorSPX rightBack = new WPI_VictorSPX(DriveConstants.rightBackID);
@@ -39,10 +46,10 @@ public class Robot extends TimedRobot {
       ClimberConstants.climberPIDKp,
       ClimberConstants.climberPIDKi,
       ClimberConstants.climberPIDKd);
-  Encoder climberEncoder = new Encoder(9, 8);
-  DigitalInput limitswitch = new DigitalInput(1);
-
-  private double magnification;
+  Encoder climberEncoder = new Encoder(
+      ClimberConstants.climberEncoderChannelA,
+      ClimberConstants.climberEncoderChannelB);
+  DigitalInput limitswitch = new DigitalInput(ClimberConstants.limitswitchChannel);
 
   enum ClimberState {
     HOLD_POSITION_INIT,
@@ -55,6 +62,34 @@ public class Robot extends TimedRobot {
   ClimberState climberState = ClimberState.HOLD_POSITION_INIT;
   Boolean climberIsPID = true;
 
+  Timer timer = new Timer();
+
+  AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
+
+  final String defaultAuto = "Default";
+  final String forward = "Forward";
+  final String middleOneCoral = "M - one coral";
+  final String middleOneCoralAndBackLeft = "M - one coral and back left";
+  final String middleOneCoralAndBackRight = "M - one coral and back right";
+  final String rightOneCoral = "R - one coral";
+  SendableChooser<String> autoChooser = new SendableChooser<>();
+  String autoSelected;
+
+  final boolean saveLog = true;
+
+  private void putSmartDashboardData() {
+    SmartDashboard.putNumber("tankRightSpeed", rightFront.get());
+    SmartDashboard.putNumber("tankLeftSpeed", leftFront.get());
+    SmartDashboard.putNumber("intakeMotorSpeed", intakeMotor.get());
+    SmartDashboard.putNumber("climberEncoder", climberEncoder.get());
+    SmartDashboard.putNumber("climberMotorSpeed", climberMotor.get());
+    SmartDashboard.putBoolean("LimitSwitchState", limitswitch.get());
+    SmartDashboard.putString("ClimberState", climberState.toString());
+    SmartDashboard.putBoolean("ClimberIsPID", climberIsPID);
+    SmartDashboard.putNumber("Timer", timer.get());
+    SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+  }
+
   public Robot() {
     rightFront.setInverted(DriveConstants.rightFrontInverted);
     rightBack.setInverted(DriveConstants.rightBackInverted);
@@ -65,37 +100,151 @@ public class Robot extends TimedRobot {
 
     climberMotor.setInverted(ClimberConstants.climberMotorInverted);
 
-    SmartDashboard.putData(climberPID);
-    SmartDashboard.putNumber("tankRightSpeed", rightFront.get());
-    SmartDashboard.putNumber("tankLeftSpeed", leftFront.get());
-    SmartDashboard.putNumber("intakeMotorSpeed", intakeMotor.get());
-    SmartDashboard.putNumber("climberEncoder", climberEncoder.get());
-    SmartDashboard.putNumber("climberMotorSpeed", climberMotor.get());
-    SmartDashboard.putBoolean("LimitSwitchState", limitswitch.get());
-    SmartDashboard.putString("ClimberState", climberState.toString());
-    SmartDashboard.putBoolean("ClimberIsPID", climberIsPID);
-
     climberEncoder.reset();
+    climberPID.setSetpoint(0);
+
+    gyro.reset();
+
+    autoChooser.setDefaultOption("Default Auto", defaultAuto);
+    autoChooser.addOption("Forward", forward);
+    autoChooser.addOption("M - one Coral", middleOneCoral);
+    autoChooser.addOption("R - one coral", rightOneCoral);
+    autoChooser.addOption("M one coral and back left", middleOneCoralAndBackLeft);
+    autoChooser.addOption("M - one coral and back right", middleOneCoralAndBackRight);
+    SmartDashboard.putData("Auto chooser", autoChooser);
+
+    SmartDashboard.putData(climberPID);
+
+    putSmartDashboardData();
+  }
+
+  @Override
+  public void robotInit() {
+    NetworkTableInstance.getDefault().getStringTopic("/Metadata/BuildDate").publish()
+        .set(BuildConstants.BUILD_DATE);
+    NetworkTableInstance.getDefault().getStringTopic("/Metadata/GitBranch").publish()
+        .set(BuildConstants.GIT_BRANCH);
+    NetworkTableInstance.getDefault().getStringTopic("/Metadata/GitDate").publish()
+        .set(BuildConstants.GIT_DATE);
+    NetworkTableInstance.getDefault().getStringTopic("/Metadata/GitDirty").publish()
+        .set(BuildConstants.DIRTY == 1 ? "Dirty!" : "Clean! Good job!");
+    NetworkTableInstance.getDefault().getStringTopic("/Metadata/GitSHA").publish()
+        .set(BuildConstants.GIT_SHA);
+
+    SmartDashboard.putString("GitInfo", String.format("%s (%s), %s",
+        BuildConstants.GIT_SHA,
+        BuildConstants.GIT_BRANCH,
+        BuildConstants.DIRTY == 1 ? "Dirty" : "Clean"));
+    SmartDashboard.putString("BuildDate", BuildConstants.BUILD_DATE);
+
+    CameraServer.startAutomaticCapture();
+
+    if (saveLog) {
+      DataLogManager.start();
+      DriverStation.startDataLog(DataLogManager.getLog());
+    }
   }
 
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("tankRightSpeed", rightFront.get());
-    SmartDashboard.putNumber("tankLeftSpeed", leftFront.get());
-    SmartDashboard.putNumber("intakeMotorSpeed", intakeMotor.get());
-    SmartDashboard.putNumber("climberEncoder", climberEncoder.get());
-    SmartDashboard.putNumber("climberMotorSpeed", climberMotor.get());
-    SmartDashboard.putBoolean("LimitSwitchState", limitswitch.get());
-    SmartDashboard.putString("ClimberState", climberState.toString());
-    SmartDashboard.putBoolean("ClimberIsPID", climberIsPID);
+    putSmartDashboardData();
   }
 
   @Override
   public void autonomousInit() {
+    timer.reset();
+    timer.start();
+    autoSelected = autoChooser.getSelected();
   }
 
   @Override
   public void autonomousPeriodic() {
+    SmartDashboard.putString("Auto selected", autoSelected);
+
+    switch (autoSelected) {
+      case defaultAuto:
+        // Do nothing in default auto
+        break;
+      case forward:
+        forward();
+        break;
+      case middleOneCoral:
+        middleOneCoral();
+        break;
+      case rightOneCoral:
+        rightOneCoral();
+        break;
+      case middleOneCoralAndBackLeft:
+        middleOneCoralAndBackLeft();
+        break;
+      case middleOneCoralAndBackRight:
+        middleOneCoralAndBackRight();
+        break;
+      default:
+        System.err.println("Unknown auto selected: " + autoSelected);
+        break;
+    }
+  }
+
+  private void autoCmd(double rightSpeed, double leftSpeed, double intakeSpeed) {
+    rightFront.set(rightSpeed);
+    leftFront.set(leftSpeed);
+    rightBack.follow(rightFront);
+    leftBack.follow(leftFront);
+
+    intakeMotor.set(intakeSpeed);
+  }
+
+  private void forward() {
+    if (timer.get() < 2.0) {
+      autoCmd(-0.5, -0.5, 0);
+    } else {
+      autoCmd(0.0, 0.0, 0.0);
+    }
+  }
+
+  private void middleOneCoral() {
+    if (timer.get() < 2.0) {
+      autoCmd(-0.5, -0.5, 0.0);
+    } else {
+      autoCmd(0.0, 0.0, 0.4);
+    }
+  }
+
+  private void middleOneCoralAndBackLeft() {
+    if (timer.get() < 2.0) {
+      autoCmd(-0.5, -0.5, 0.0);
+    } else if (timer.get() < 3.0) {
+      autoCmd(0.0, 0.0, 0.4);
+    } else if (timer.get() < 4.5) {
+      autoCmd(0.2, 0.2, 0.0);
+    } else if (gyro.getAngle() > -120) {
+      autoCmd(-0.2, 0.2, 0.0);
+    } else {
+      autoCmd(0.0, 0.0, 0.0);
+    }
+  }
+
+  private void middleOneCoralAndBackRight() {
+    if (timer.get() < 2.0) {
+      autoCmd(-0.5, -0.5, 0.0);
+    } else if (timer.get() < 3.0) {
+      autoCmd(0.0, 0.0, 0.4);
+    } else if (timer.get() < 4.5) {
+      autoCmd(0.2, 0.2, 0.0);
+    } else if (gyro.getAngle() < 120) {
+      autoCmd(0.2, -0.2, 0.0);
+    } else {
+      autoCmd(0.0, 0.0, 0.0);
+    }
+  }
+
+  private void rightOneCoral() {
+    if (timer.get() < 2.0) {
+      autoCmd(0.1, 0.2, 0.0);
+    } else {
+      autoCmd(0.0, 0.0, 0.0);
+    }
   }
 
   @Override
@@ -115,24 +264,43 @@ public class Robot extends TimedRobot {
     resetClimberEncoder();
   }
 
+  Boolean tankInverted = false;
+
   private void tankControl() {
-    if (xboxController.getYButton()) {
-      magnification = 0.75;
-    } else {
-      magnification = 0.5;
+    if (coController.getYButton()) {
+      tankInverted = true;
+    }
+    if (coController.getAButton()) {
+      tankInverted = false;
     }
 
-    rightFront.set(xboxController.getRightY() * magnification);
-    leftFront.set(xboxController.getLeftY() * magnification);
+    double magnification;
+    if (coController.getRightTriggerAxis() > 0.1) {
+      magnification = 0.5;
+    } else if (climberEncoder.get() >= 1700) {
+      magnification = 0.3;
+    } else {
+      magnification = 0.8;
+    }
+
+    double rightSpeed = tankInverted
+        ? mainController.getLeftY() * magnification * -1
+        : mainController.getRightY() * magnification;
+
+    double leftSpeed = tankInverted
+        ? mainController.getRightY() * magnification * -1
+        : mainController.getLeftY() * magnification;
+
+    rightFront.set(rightSpeed);
+    leftFront.set(leftSpeed);
     rightBack.follow(rightFront);
     leftBack.follow(leftFront);
-
   }
 
   private void intakeControl() {
-    if (xboxController.getLeftTriggerAxis() > 0.1) {
-      intakeMotor.set(xboxController.getLeftTriggerAxis() * intakeConstants.intakeMaxSpeed);
-    } else if (xboxController.getLeftBumperButton()) {
+    if (mainController.getLeftTriggerAxis() > 0.1) {
+      intakeMotor.set(mainController.getLeftTriggerAxis() * intakeConstants.intakeMaxSpeed);
+    } else if (mainController.getLeftBumperButton()) {
       intakeMotor.set(-intakeConstants.intakeMaxSpeed);
     } else {
       intakeMotor.set(0.0);
@@ -145,30 +313,30 @@ public class Robot extends TimedRobot {
         climberState = ClimberState.HOLD_POSITION;
         break;
       case HOLD_POSITION:
-        if (xboxController.getAButtonPressed()) {
+        if (mainController.getAButtonPressed()) {
           climberState = ClimberState.PULL_BACK;
-        } else if (xboxController.getRightBumperButton()
-            || xboxController.getRightTriggerAxis() > 0.1) {
+        } else if (mainController.getRightBumperButton()
+            || mainController.getRightTriggerAxis() > 0.1) {
           climberState = ClimberState.CONTINUOUS_UP_DOWN;
-        } else if (xboxController.getBButton()) {
+        } else if (mainController.getBButton()) {
           climberState = ClimberState.EXTEND;
         }
         break;
       case PULL_BACK:
-        if (xboxController.getAButtonPressed()
+        if (mainController.getXButtonPressed()
             || limitswitch.get()) {
           climberState = ClimberState.HOLD_POSITION_INIT;
         }
         break;
       case CONTINUOUS_UP_DOWN:
-        if (!xboxController.getRightBumperButton() &&
-            !(xboxController.getRightTriggerAxis() > 0.1)) {
+        if (!mainController.getRightBumperButton()
+            && !(mainController.getRightTriggerAxis() > 0.1)) {
           climberState = ClimberState.HOLD_POSITION_INIT;
         }
         break;
       case EXTEND:
         if (climberIsPID) {
-          if (xboxController.getBButtonPressed()
+          if (mainController.getXButtonPressed()
               || climberEncoder.get() >= ClimberConstants.climberExtendPosition) {
             climberState = ClimberState.HOLD_POSITION_INIT;
           }
@@ -200,9 +368,9 @@ public class Robot extends TimedRobot {
         }
         break;
       case CONTINUOUS_UP_DOWN:
-        if (xboxController.getRightBumperButton()) {
+        if (mainController.getRightBumperButton()) {
           climberMotor.set(-0.6);
-        } else if (xboxController.getRightTriggerAxis() > 0.1) {
+        } else if (mainController.getRightTriggerAxis() > 0.1) {
           climberMotor.set(0.6);
         } else {
           climberMotor.set(0.0);
@@ -221,13 +389,13 @@ public class Robot extends TimedRobot {
   }
 
   private void toggleClimberPID() {
-    if (xboxController.getStartButtonPressed()) {
+    if (mainController.getStartButtonPressed()) {
       climberIsPID = !climberIsPID;
     }
   }
 
   private void resetClimberEncoder() {
-    if (xboxController.getBackButton()) {
+    if (mainController.getBackButton()) {
       climberEncoder.reset();
     }
   }
