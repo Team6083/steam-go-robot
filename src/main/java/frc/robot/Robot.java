@@ -179,6 +179,7 @@ public class Robot extends TimedRobot {
         break;
       case middleOneCoralAndBackRight:
         middleOneCoralAndBackRight();
+        break;
       default:
         System.out.println("Unknown auto selected: " + autoSelected);
         break;
