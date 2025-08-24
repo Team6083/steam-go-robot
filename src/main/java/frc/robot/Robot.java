@@ -32,7 +32,7 @@ import frc.robot.Constants.intakeConstants;
  */
 public class Robot extends TimedRobot {
 
-  XboxController xboxController = new XboxController(0);
+  XboxController mainController = new XboxController(0);
   XboxController coController = new XboxController(1);
 
   WPI_VictorSPX rightFront = new WPI_VictorSPX(DriveConstants.rightFrontID);
@@ -289,8 +289,8 @@ public class Robot extends TimedRobot {
       } else {
         magnification = -0.8;
       }
-      rightFront.set(xboxController.getLeftY() * magnification);
-      leftFront.set(xboxController.getRightY() * magnification);
+      rightFront.set(mainController.getLeftY() * magnification);
+      leftFront.set(mainController.getRightY() * magnification);
       rightBack.follow(rightFront);
       leftBack.follow(leftFront);
 
@@ -302,8 +302,8 @@ public class Robot extends TimedRobot {
       } else {
         magnification = 0.8;
       }
-      rightFront.set(xboxController.getRightY() * magnification);
-      leftFront.set(xboxController.getLeftY() * magnification);
+      rightFront.set(mainController.getRightY() * magnification);
+      leftFront.set(mainController.getLeftY() * magnification);
       rightBack.follow(rightFront);
       leftBack.follow(leftFront);
     }
@@ -311,9 +311,9 @@ public class Robot extends TimedRobot {
   }
 
   private void intakeControl() {
-    if (xboxController.getLeftTriggerAxis() > 0.1) {
-      intakeMotor.set(xboxController.getLeftTriggerAxis() * intakeConstants.intakeMaxSpeed);
-    } else if (xboxController.getLeftBumperButton()) {
+    if (mainController.getLeftTriggerAxis() > 0.1) {
+      intakeMotor.set(mainController.getLeftTriggerAxis() * intakeConstants.intakeMaxSpeed);
+    } else if (mainController.getLeftBumperButton()) {
       intakeMotor.set(-intakeConstants.intakeMaxSpeed);
     } else {
       intakeMotor.set(0.0);
@@ -326,30 +326,30 @@ public class Robot extends TimedRobot {
         climberState = ClimberState.HOLD_POSITION;
         break;
       case HOLD_POSITION:
-        if (xboxController.getAButtonPressed()) {
+        if (mainController.getAButtonPressed()) {
           climberState = ClimberState.PULL_BACK;
-        } else if (xboxController.getRightBumperButton()
-            || xboxController.getRightTriggerAxis() > 0.1) {
+        } else if (mainController.getRightBumperButton()
+            || mainController.getRightTriggerAxis() > 0.1) {
           climberState = ClimberState.CONTINUOUS_UP_DOWN;
-        } else if (xboxController.getBButton()) {
+        } else if (mainController.getBButton()) {
           climberState = ClimberState.EXTEND;
         }
         break;
       case PULL_BACK:
-        if (xboxController.getXButtonPressed()
+        if (mainController.getXButtonPressed()
             || limitswitch.get()) {
           climberState = ClimberState.HOLD_POSITION_INIT;
         }
         break;
       case CONTINUOUS_UP_DOWN:
-        if (!xboxController.getRightBumperButton() &&
-            !(xboxController.getRightTriggerAxis() > 0.1)) {
+        if (!mainController.getRightBumperButton() &&
+            !(mainController.getRightTriggerAxis() > 0.1)) {
           climberState = ClimberState.HOLD_POSITION_INIT;
         }
         break;
       case EXTEND:
         if (climberIsPID) {
-          if (xboxController.getXButtonPressed()
+          if (mainController.getXButtonPressed()
               || climberEncoder.get() >= ClimberConstants.climberExtendPosition) {
             climberState = ClimberState.HOLD_POSITION_INIT;
           }
@@ -381,9 +381,9 @@ public class Robot extends TimedRobot {
         }
         break;
       case CONTINUOUS_UP_DOWN:
-        if (xboxController.getRightBumperButton()) {
+        if (mainController.getRightBumperButton()) {
           climberMotor.set(-0.6);
-        } else if (xboxController.getRightTriggerAxis() > 0.1) {
+        } else if (mainController.getRightTriggerAxis() > 0.1) {
           climberMotor.set(0.6);
         } else {
           climberMotor.set(0.0);
@@ -402,13 +402,13 @@ public class Robot extends TimedRobot {
   }
 
   private void toggleClimberPID() {
-    if (xboxController.getStartButtonPressed()) {
+    if (mainController.getStartButtonPressed()) {
       climberIsPID = !climberIsPID;
     }
   }
 
   private void resetClimberEncoder() {
-    if (xboxController.getBackButton()) {
+    if (mainController.getBackButton()) {
       climberEncoder.reset();
     }
   }
