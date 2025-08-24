@@ -78,17 +78,7 @@ public class Robot extends TimedRobot {
 
   final boolean saveLog = true;
 
-  public Robot() {
-    rightFront.setInverted(DriveConstants.rightFrontInverted);
-    rightBack.setInverted(DriveConstants.rightBackInverted);
-    leftFront.setInverted(DriveConstants.leftFrontInverted);
-    leftBack.setInverted(DriveConstants.leftBackInverted);
-
-    intakeMotor.setInverted(intakeConstants.intakeMotorInverted);
-
-    climberMotor.setInverted(ClimberConstants.climberMotorInverted);
-
-    SmartDashboard.putData(climberPID);
+  private void putSmartDashboardData() {
     SmartDashboard.putNumber("tankRightSpeed", rightFront.get());
     SmartDashboard.putNumber("tankLeftSpeed", leftFront.get());
     SmartDashboard.putNumber("intakeMotorSpeed", intakeMotor.get());
@@ -99,6 +89,17 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("ClimberIsPID", climberIsPID);
     SmartDashboard.putNumber("Timer", timer.get());
     SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+  }
+
+  public Robot() {
+    rightFront.setInverted(DriveConstants.rightFrontInverted);
+    rightBack.setInverted(DriveConstants.rightBackInverted);
+    leftFront.setInverted(DriveConstants.leftFrontInverted);
+    leftBack.setInverted(DriveConstants.leftBackInverted);
+
+    intakeMotor.setInverted(intakeConstants.intakeMotorInverted);
+
+    climberMotor.setInverted(ClimberConstants.climberMotorInverted);
 
     climberEncoder.reset();
     climberPID.setSetpoint(0);
@@ -146,16 +147,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("tankRightSpeed", rightFront.get());
-    SmartDashboard.putNumber("tankLeftSpeed", leftFront.get());
-    SmartDashboard.putNumber("intakeMotorSpeed", intakeMotor.get());
-    SmartDashboard.putNumber("climberEncoder", climberEncoder.get());
-    SmartDashboard.putNumber("climberMotorSpeed", climberMotor.get());
-    SmartDashboard.putBoolean("LimitSwitchState", limitswitch.get());
-    SmartDashboard.putString("ClimberState", climberState.toString());
-    SmartDashboard.putBoolean("ClimberIsPID", climberIsPID);
-    SmartDashboard.putNumber("Timer", timer.get());
-    SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+    putSmartDashboardData();
   }
 
   @Override
