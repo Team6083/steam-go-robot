@@ -6,7 +6,6 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.studica.frc.AHRS;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -51,8 +50,6 @@ public class Robot extends TimedRobot {
       ClimberConstants.climberEncoderChannelA,
       ClimberConstants.climberEncoderChannelB);
   DigitalInput limitswitch = new DigitalInput(ClimberConstants.limitswitchChannel);
-
-  private double magnification;
 
   enum ClimberState {
     HOLD_POSITION_INIT,
@@ -278,33 +275,27 @@ public class Robot extends TimedRobot {
       tankInverted = false;
     }
 
-    if (tankInverted) {
-      if (coController.getRightTriggerAxis() > 0.1) {
-        magnification = -0.5;
-      } else if (climberEncoder.get() >= 1700) {
-        magnification = -0.3;
-      } else {
-        magnification = -0.8;
-      }
-      rightFront.set(mainController.getLeftY() * magnification);
-      leftFront.set(mainController.getRightY() * magnification);
-      rightBack.follow(rightFront);
-      leftBack.follow(leftFront);
-
+    double magnification;
+    if (coController.getRightTriggerAxis() > 0.1) {
+      magnification = 0.5;
+    } else if (climberEncoder.get() >= 1700) {
+      magnification = 0.3;
     } else {
-      if (coController.getRightTriggerAxis() > 0.1) {
-        magnification = 0.5;
-      } else if (climberEncoder.get() >= 1700) {
-        magnification = 0.3;
-      } else {
-        magnification = 0.8;
-      }
-      rightFront.set(mainController.getRightY() * magnification);
-      leftFront.set(mainController.getLeftY() * magnification);
-      rightBack.follow(rightFront);
-      leftBack.follow(leftFront);
+      magnification = 0.8;
     }
 
+    double rightSpeed = tankInverted
+        ? mainController.getLeftY() * magnification * -1
+        : mainController.getRightY() * magnification;
+
+    double leftSpeed = tankInverted
+        ? mainController.getRightY() * magnification * -1
+        : mainController.getLeftY() * magnification;
+
+    rightFront.set(rightSpeed);
+    leftFront.set(leftSpeed);
+    rightBack.follow(rightFront);
+    leftBack.follow(leftFront);
   }
 
   private void intakeControl() {
