@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
   SendableChooser<String> autoChooser = new SendableChooser<>();
   String autoSelected;
 
-  final boolean saveLog = true;
+  final boolean saveLog = false;
 
   private void putSmartDashboardData() {
     SmartDashboard.putNumber("tankRightSpeed", rightFront.get());
