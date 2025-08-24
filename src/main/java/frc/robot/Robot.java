@@ -114,6 +114,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto chooser", autoChooser);
 
     SmartDashboard.putData(climberPID);
+
+    putSmartDashboardData();
   }
 
   @Override
@@ -141,8 +143,6 @@ public class Robot extends TimedRobot {
       DataLogManager.start();
       DriverStation.startDataLog(DataLogManager.getLog());
     }
-
-    putSmartDashboardData();
   }
 
   @Override
