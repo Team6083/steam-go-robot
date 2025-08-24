@@ -66,12 +66,12 @@ public class Robot extends TimedRobot {
 
   AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI);
 
-  final String kDefaultAuto = "Default";
-  final String kForward = "Forward";
-  final String kMiddleOneCoral = "M - one coral";
-  final String kMiddleOneCoralAndBackLeft = "M - one coral and back left";
-  final String kMiddleOneCoralAndBackRight = "M - one coral and back right";
-  final String kRightOneCoral = "R - one coral";
+  final String DefaultAuto = "Default";
+  final String Forward = "Forward";
+  final String MiddleOneCoral = "M - one coral";
+  final String MiddleOneCoralAndBackLeft = "M - one coral and back left";
+  final String MiddleOneCoralAndBackRight = "M - one coral and back right";
+  final String RightOneCoral = "R - one coral";
   SendableChooser<String> autoChooser = new SendableChooser<>();
   String autoSelected;
 
@@ -105,12 +105,12 @@ public class Robot extends TimedRobot {
 
     gyro.reset();
 
-    autoChooser.setDefaultOption("Default Auto", kDefaultAuto);
-    autoChooser.addOption("Forward", kForward);
-    autoChooser.addOption("M - one Coral", kMiddleOneCoral);
-    autoChooser.addOption("R - one coral", kRightOneCoral);
-    autoChooser.addOption("M one coral and back left", kMiddleOneCoralAndBackLeft);
-    autoChooser.addOption("M - one coral and back right", kMiddleOneCoralAndBackRight);
+    autoChooser.setDefaultOption("Default Auto", DefaultAuto);
+    autoChooser.addOption("Forward", Forward);
+    autoChooser.addOption("M - one Coral", MiddleOneCoral);
+    autoChooser.addOption("R - one coral", RightOneCoral);
+    autoChooser.addOption("M one coral and back left", MiddleOneCoralAndBackLeft);
+    autoChooser.addOption("M - one coral and back right", MiddleOneCoralAndBackRight);
     SmartDashboard.putData("Auto chooser", autoChooser);
 
     SmartDashboard.putData(climberPID);
@@ -162,22 +162,22 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Auto selected", autoSelected);
 
     switch (autoSelected) {
-      case kDefaultAuto:
+      case DefaultAuto:
         // Do nothing in default auto
         break;
-      case kForward:
+      case Forward:
         forward();
         break;
-      case kMiddleOneCoral:
+      case MiddleOneCoral:
         MiddleOneCoral();
         break;
-      case kRightOneCoral:
+      case RightOneCoral:
         RightOneCoral();
         break;
-      case kMiddleOneCoralAndBackLeft:
+      case MiddleOneCoralAndBackLeft:
         MiddleOneCoralAndBackLeft();
         break;
-      case kMiddleOneCoralAndBackRight:
+      case MiddleOneCoralAndBackRight:
         MiddleOneCoralAndBackRight();
       default:
         System.out.println("Unknown auto selected: " + autoSelected);
