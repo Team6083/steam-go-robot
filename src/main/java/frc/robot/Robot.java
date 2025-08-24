@@ -128,8 +128,6 @@ public class Robot extends TimedRobot {
         .set(BuildConstants.DIRTY == 1 ? "Dirty!" : "Clean! Good job!");
     NetworkTableInstance.getDefault().getStringTopic("/Metadata/GitSHA").publish()
         .set(BuildConstants.GIT_SHA);
-    NetworkTableInstance.getDefault().getStringTopic("/Metadata/GitBranch").publish()
-        .set(BuildConstants.GIT_BRANCH);
 
     SmartDashboard.putString("GitInfo", String.format("%s (%s), %s",
         BuildConstants.GIT_SHA,
