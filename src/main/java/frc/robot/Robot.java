@@ -47,8 +47,10 @@ public class Robot extends TimedRobot {
       ClimberConstants.climberPIDKp,
       ClimberConstants.climberPIDKi,
       ClimberConstants.climberPIDKd);
-  Encoder climberEncoder = new Encoder(9, 8);
-  DigitalInput limitswitch = new DigitalInput(1);
+  Encoder climberEncoder = new Encoder(
+      ClimberConstants.climberEncoderChannelA,
+      ClimberConstants.climberEncoderChannelB);
+  DigitalInput limitswitch = new DigitalInput(ClimberConstants.limitswitchChannel);
 
   private double magnification;
 
@@ -113,14 +115,8 @@ public class Robot extends TimedRobot {
     autoChooser.addOption("M one coral and back left", kOneCoralAndBackL);
     autoChooser.addOption("M - one coral and back right", kOneCoralAndBackR);
     SmartDashboard.putData("Auto chooser", autoChooser);
-    SmartDashboard.putNumber("Timer", timer.get());
 
-    if (saveLog) {
-      DataLogManager.start();
-      DriverStation.startDataLog(DataLogManager.getLog());
-    }
-
-    CameraServer.startAutomaticCapture();
+    SmartDashboard.putData(climberPID);
   }
 
   @Override
@@ -143,6 +139,15 @@ public class Robot extends TimedRobot {
         BuildConstants.GIT_BRANCH,
         BuildConstants.DIRTY == 1 ? "Dirty" : "Clean"));
     SmartDashboard.putString("BuildDate", BuildConstants.BUILD_DATE);
+
+    CameraServer.startAutomaticCapture();
+
+    if (saveLog) {
+      DataLogManager.start();
+      DriverStation.startDataLog(DataLogManager.getLog());
+    }
+
+    putSmartDashboardData();
   }
 
   @Override
@@ -195,7 +200,7 @@ public class Robot extends TimedRobot {
   }
 
   private void forward() {
-    if (timer.get() < 2) {
+    if (timer.get() < 2.0) {
       autoCmd(-0.5, -0.5, 0);
     } else {
       autoCmd(0.0, 0.0, 0.0);
@@ -204,7 +209,7 @@ public class Robot extends TimedRobot {
 
   private void MOneCoral() {
     if (timer.get() < 2.0) {
-      autoCmd(-0.5, -0.5, 0);
+      autoCmd(-0.5, -0.5, 0.0);
     } else {
       autoCmd(0.0, 0.0, 0.4);
     }
@@ -242,7 +247,7 @@ public class Robot extends TimedRobot {
     if (timer.get() < 2.0) {
       autoCmd(0.1, 0.2, 0.0);
     } else {
-      autoCmd(0, 0, 0);
+      autoCmd(0.0, 0.0, 0.0);
     }
   }
 
